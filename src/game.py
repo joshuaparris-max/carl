@@ -52,7 +52,10 @@ class Game:
 
     def collect_messages(self):
         messages = []
-        for event in self.events.drain():
+        drained = self.events.drain()
+        # store last drained events for UI use
+        self.state.last_events = drained
+        for event in drained:
             if event.message:
                 messages.append(event.message)
         return "\n".join(messages)

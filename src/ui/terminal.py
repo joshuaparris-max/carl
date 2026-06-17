@@ -15,6 +15,18 @@ class TerminalUI:
         print("\n" + "=" * 62)
         self.print_status(state)
         print("=" * 62)
+        # Show any overlay-style events (inventory, transition, game over)
+        last_events = getattr(state, 'last_events', []) or []
+        for ev in last_events:
+            if ev.event_type == 'inventory_viewed':
+                print('\n=== INVENTORY ===')
+                print(ev.message)
+                print('=== END INVENTORY ===\n')
+            if ev.event_type == 'transition':
+                print(f"\n=== TRANSITION ===\n{ev.message}\n=== END TRANSITION ===\n")
+            if ev.event_type == 'game_over':
+                print(f"\n*** GAME OVER ***\n{ev.message}\n")
+
         if last_message:
             print(last_message)
 
@@ -22,9 +34,10 @@ class TerminalUI:
         carl = state.world.carl
         donut = state.world.donut
         jacket = state.items[carl.inventory[0]]["name"] if carl.inventory else "None"
+        pants = '[NO PANTS]' if 'no_pants' in getattr(carl, 'debuffs', []) else ''
         print(
             f"Carl | Level {carl.level} | HP {carl.resources.health}/{carl.resources.max_health} "
-            f"| Armor {carl.resources.armor} | Gear: {jacket} | Debuffs: {', '.join(carl.debuffs)}"
+            f"| Armor {carl.resources.armor} | Gear: {jacket} | Debuffs: {', '.join(carl.debuffs)} {pants}"
         )
         print(
             f"Donut | Level {donut.level} | HP {donut.resources.health}/{donut.resources.max_health} "
