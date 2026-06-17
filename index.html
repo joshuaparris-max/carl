@@ -438,6 +438,21 @@
     }
     .banner.show { animation: questBanner 2s ease forwards; }
 
+  /* Overlay screens */
+  .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 60; }
+  .overlay.on { display: flex; }
+  .overlay-panel { background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.55)); border: 1px solid rgba(255,255,255,.05); padding: 22px; border-radius: 12px; width: min(720px, 86%); text-align: center; color: var(--text); }
+  .overlay-panel.large { width: min(960px, 92%); max-height: 86%; overflow: auto; }
+  .overlay h1 { font-size: 36px; margin-bottom: 6px; }
+  .overlay .subtitle { color: var(--muted); margin-bottom: 14px; }
+  .title-actions button, .overlay-actions button { margin: 6px; padding: 8px 14px; border-radius: 8px; background: rgba(232,160,48,.08); border: 1px solid rgba(232,160,48,.22); color: var(--amber); font-weight:800; }
+  .inventory-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap:10px; margin: 12px 0; }
+  .inventory-slot { padding:10px; border-radius:8px; background:rgba(0,0,0,.14); border:1px solid rgba(255,255,255,.04); display:flex; justify-content:space-between; align-items:center; cursor:pointer }
+  .inventory-details { text-align:left; padding:8px; border-radius:8px; background:rgba(0,0,0,.08); border:1px solid rgba(255,255,255,.03); color:var(--muted); }
+  .pants-indicator { position: absolute; right: 12px; top: 14px; width:14px; height:14px; border-radius:3px; background: rgba(232,64,64,.85); display:none }
+  .pants-indicator.on { display:block; box-shadow: 0 0 10px rgba(232,64,64,.5); }
+
+
     @keyframes pulsePlayer {
       0%, 100% { box-shadow: 0 0 12px rgba(207,232,255,.15); }
       50% { box-shadow: 0 0 24px rgba(207,232,255,.36); }
@@ -458,6 +473,59 @@
 </head>
 <body>
   <div class="banner" id="questBanner"></div>
+  <!-- Overlays and screens -->
+  <div id="titleScreen" class="overlay on">
+    <div class="overlay-panel">
+      <h1>Dungeon Crawler Carl</h1>
+      <p class="subtitle">A very bad day for underdressed adventurers</p>
+      <div class="title-actions">
+        <button id="btnNewGame">New Game</button>
+        <button id="btnContinue">Continue</button>
+        <button id="btnOptions">Options</button>
+      </div>
+      <div class="title-donut">Donut: *judging intensifies*</div>
+    </div>
+  </div>
+
+  <div id="inventoryModal" class="overlay">
+    <div class="overlay-panel large">
+      <h2>Inventory</h2>
+      <div class="inventory-grid" id="inventoryGrid"></div>
+      <div class="inventory-details" id="inventoryDetails">Hover an item to see details.</div>
+      <div class="overlay-actions"><button id="closeInventory">Close</button></div>
+    </div>
+  </div>
+
+  <div id="pauseScreen" class="overlay">
+    <div class="overlay-panel">
+      <h2>Paused</h2>
+      <p>The dungeon freezes. The System is mildly offended.</p>
+      <div class="overlay-actions"><button id="resumeBtn">Resume</button></div>
+    </div>
+  </div>
+
+  <div id="gameOver" class="overlay">
+    <div class="overlay-panel">
+      <h2>Game Over</h2>
+      <p id="gameOverReason">You died.</p>
+      <div class="overlay-actions"><button id="goTitle">Title</button><button id="tryAgain">Restart</button></div>
+    </div>
+  </div>
+
+  <div id="transitionScreen" class="overlay">
+    <div class="overlay-panel">
+      <h2 id="transitionText">Entering Floor 2</h2>
+      <div id="transitionCountdown">3</div>
+    </div>
+  </div>
+
+  <div id="victoryScreen" class="overlay">
+    <div class="overlay-panel">
+      <h2>Victory</h2>
+      <p>Tutorial complete. Viewer count: <span id="victoryViewers">0</span></p>
+      <div class="overlay-actions"><button id="backToTitle">Back to Title</button></div>
+    </div>
+  </div>
   <main class="game-shell">
     <aside class="panel left-panel">
       <section class="portrait">
@@ -488,6 +556,7 @@ GRAND CHAMPION</div>
       <section class="mini-panel">
         <div class="mini-title">Inventory</div>
         <div class="inventory-list" id="inventoryList"></div>
+        <div id="pantsIndicator" class="pants-indicator" title="No Pants"></div>
       </section>
     </aside>
 
@@ -1127,6 +1196,102 @@ GRAND CHAMPION</div>
         runAction(key);
       }
     });
+
+    // Overlay controls and UI improvements
+    function showOverlay(id) {
+      document.querySelectorAll('.overlay').forEach(o=>o.classList.remove('on'));
+      const el = document.getElementById(id);
+      if (el) el.classList.add('on');
+    }
+    function hideOverlay(id) { document.getElementById(id)?.classList.remove('on'); }
+
+    document.getElementById('btnNewGame').addEventListener('click', () => { hideOverlay('titleScreen'); system('New run started. The System is unimpressed.'); render(); });
+    document.getElementById('btnContinue').addEventListener('click', () => { hideOverlay('titleScreen'); loadGame(); render(); });
+    document.getElementById('btnOptions').addEventListener('click', () => { system('Options are too many. Pick chaos.'); });
+
+    document.getElementById('closeInventory').addEventListener('click', () => hideOverlay('inventoryModal'));
+    document.getElementById('resumeBtn').addEventListener('click', () => hideOverlay('pauseScreen'));
+    document.getElementById('goTitle').addEventListener('click', () => location.reload());
+    document.getElementById('tryAgain').addEventListener('click', () => { hideOverlay('gameOver'); restoreCheckpoint(); render(); });
+    document.getElementById('backToTitle').addEventListener('click', () => location.reload());
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        const any = Array.from(document.querySelectorAll('.overlay.on')).length;
+        if (any) document.querySelectorAll('.overlay.on').forEach(x=>x.classList.remove('on'));
+        else showOverlay('pauseScreen');
+      }
+      if (e.key.toLowerCase() === 'i') { showInventoryModal(); }
+    });
+
+    function showInventoryModal() {
+      const grid = document.getElementById('inventoryGrid');
+      grid.innerHTML = '';
+      const counts = {};
+      for (const id of state.entities.carl.inventory) counts[id] = (counts[id] || 0) + 1;
+      for (const [id, n] of Object.entries(counts)) {
+        const item = state.items[id];
+        const slot = document.createElement('div');
+        slot.className = 'inventory-slot';
+        slot.dataset.item = id;
+        slot.innerHTML = `<div>${item.name} ${n>1? 'x'+n: ''}</div><div>${item.slot}</div>`;
+        slot.addEventListener('mouseenter', () => { document.getElementById('inventoryDetails').textContent = Object.entries(item).map(([k,v])=>`${k}: ${v}`).join(' | '); });
+        slot.addEventListener('mouseleave', () => { document.getElementById('inventoryDetails').textContent = 'Hover an item to see details.'; });
+        slot.addEventListener('click', () => { runAction('e'); hideOverlay('inventoryModal'); });
+        grid.appendChild(slot);
+      }
+      showOverlay('inventoryModal');
+    }
+
+    // Collapsible quest log
+    document.querySelectorAll('.quest-box .mini-title').forEach(h => h.style.cursor = 'pointer');
+    document.querySelectorAll('.quest-box .mini-title').forEach(h => h.addEventListener('click', () => {
+      const list = document.querySelector('.quest-list'); list.style.display = list.style.display === 'none' ? 'grid' : 'none';
+    }));
+
+    // Contextual controls: show only relevant actions
+    function updateControls() {
+      const controlsLine = document.getElementById('controlsLine');
+      const carl = state.entities.carl;
+      const nearby = { npc: !!nearestNpc(), chest: !!state.objects.find(o=>o.type==='chest'&&Math.abs(o.x-carl.x)<=1&&Math.abs(o.y-carl.y)<=1), pickup: !!state.objects.find(o=>o.type==='pickup'&&o.x===carl.x&&o.y===carl.y), shop: !!state.objects.find(o=>o.type==='shop'&&Math.abs(o.x-carl.x)<=1&&Math.abs(o.y-carl.y)<=1), enemy: !!Object.values(state.entities).find(e=>e.type==='monster'&&near(carl,e,1)) };
+      const list = [];
+      list.push('WASD move');
+      if (nearby.enemy) list.push('X attack');
+      if (nearby.enemy) list.push('U use');
+      if (nearby.npc) list.push('T talk');
+      if (nearby.chest) list.push('O open');
+      list.push('I inventory');
+      if (nearby.pickup) list.push('P pickup');
+      if (nearby.shop) list.push('B buy');
+      list.push('F/H/R Donut');
+      list.push('V save');
+      list.push('Q quit');
+      controlsLine.innerHTML = list.map(c=>`<span class="control-pill">${c}</span>`).join('');
+    }
+
+    // Auto-save when entering shop/saferoom
+    const prevPos = { x: state.entities.carl.x, y: state.entities.carl.y };
+    const origMove = move;
+    window.move = function(dx, dy) {
+      const res = origMove(dx, dy);
+      const carl = state.entities.carl;
+      const shop = state.objects.find(o=>o.type==='shop'&&Math.abs(o.x-carl.x)<=0&&Math.abs(o.y-carl.y)<=0);
+      if (shop) saveGame();
+      updateControls();
+      return res;
+    };
+
+    // Render pants indicator
+    const origRenderChars = renderCharacters;
+    window.renderCharacters = function() {
+      origRenderChars();
+      const carl = state.entities.carl;
+      const ind = document.getElementById('pantsIndicator');
+      if (carl.debuffs && carl.debuffs.includes('no_pants')) ind.classList.add('on'); else ind.classList.remove('on');
+    };
+
+    // Show title on load
+    showOverlay('titleScreen');
 
     document.getElementById("controlsLine").innerHTML = controls.map(c => `<span class="control-pill">${c}</span>`).join("");
     system("Welcome, Carl. You have been registered while aggressively failing to wear complete clothing.");
