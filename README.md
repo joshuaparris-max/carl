@@ -1,5 +1,10 @@
 # Dungeon Crawler Carl Game Prototype
 
+<p align="left">
+	<img src="https://img.shields.io/github/actions/workflow/status/joshuaparris-max/carl/ci.yml?branch=main" alt="CI" />
+	<a href="https://carl-opal.vercel.app/"><img src="https://img.shields.io/badge/deploy-Vercel-black?style=flat&logo=vercel" alt="Vercel"/></a>
+</p>
+
 This project currently has two playable forms:
 
 - A data-driven Python terminal prototype.
