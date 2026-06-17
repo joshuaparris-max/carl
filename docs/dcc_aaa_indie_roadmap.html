@@ -1,0 +1,233 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1rem 0;font-family:var(--font-sans)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.5rem}
+.tab{padding:6px 14px;border-radius:var(--border-radius-md);font-size:13px;font-weight:500;border:1.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.tab.on{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.sec{display:none}.sec.on{display:block}
+h2{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.sub{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.2rem}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.card{background:var(--color-background-secondary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px}
+.card h3{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px}
+.card p,.card li{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.card ul{padding-left:14px}
+.card li{margin-bottom:3px}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:99px;margin-bottom:8px}
+.b-amber{background:#FAEEDA;color:#633806}.b-teal{background:#E1F5EE;color:#085041}
+.b-purple{background:#EEEDFE;color:#3C3489}.b-coral{background:#FAECE7;color:#712B13}
+.b-blue{background:#E6F1FB;color:#0C447C}.b-gray{background:#F1EFE8;color:#444441}
+@media(prefers-color-scheme:dark){
+.b-amber{background:#412402;color:#FAC775}.b-teal{background:#04342C;color:#9FE1CB}
+.b-purple{background:#26215C;color:#CECBF6}.b-coral{background:#4A1B0C;color:#F5C4B3}
+.b-blue{background:#042C53;color:#B5D4F4}.b-gray{background:#2C2C2A;color:#D3D1C7}}
+.hr{border:none;border-top:1px solid var(--color-border-tertiary);margin:1rem 0}
+.pill-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pill{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.ask{display:inline-block;margin-top:10px;padding:7px 14px;font-size:13px;font-weight:500;border-radius:var(--border-radius-md);border:1.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.ask:hover{background:var(--color-background-secondary);color:var(--color-text-primary);border-color:var(--color-border-primary)}
+.warn{background:var(--color-background-secondary);border-left:3px solid #EF9F27;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.warn strong{color:#BA7517}
+.info{background:var(--color-background-secondary);border-left:3px solid #378ADD;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.info strong{color:#185FA5}
+.stack-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--color-border-tertiary)}
+.stack-row:last-child{border-bottom:none}
+.stack-name{font-size:13px;font-weight:500;color:var(--color-text-primary);width:140px;flex-shrink:0}
+.stack-why{font-size:13px;color:var(--color-text-secondary);flex:1}
+.impact{display:flex;gap:3px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--color-border-secondary)}
+.dot.on{background:#1D9E75}
+</style>
+
+<div class="wrap">
+<h2>From Python prototype to AAA-indie — solo dev roadmap</h2>
+<p class="sub">Four pillars, one developer, sequenced by what ships fastest and matters most.</p>
+
+<div class="tabs">
+  <button class="tab on" onclick="show('truth')">Honest picture</button>
+  <button class="tab" onclick="show('engine')">Engine choice</button>
+  <button class="tab" onclick="show('visual')">Visual art</button>
+  <button class="tab" onclick="show('feel')">Game feel</button>
+  <button class="tab" onclick="show('content')">Content depth</button>
+  <button class="tab" onclick="show('polish')">UX & polish</button>
+  <button class="tab" onclick="show('sequence')">Build sequence</button>
+</div>
+
+<!-- HONEST PICTURE -->
+<div id="truth" class="sec on">
+  <div class="warn"><strong>The hard truth first.</strong> "All four pillars at once" is how solo devs ship nothing. The good news: these four pillars have a natural build order where each one makes the next easier. Follow the sequence in the last tab and you will ship a demo that feels AAA-indie within 3–4 months of consistent work.</div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-teal">What you already have</span><h3>Genuinely strong foundation</h3><ul><li>Data-driven content in JSON — critical for scaling</li><li>Separated systems (world, state, combat, quests) — clean to port</li><li>Working save/checkpoint — most devs skip this and regret it</li><li>Unit tests passing — extremely rare at this stage</li><li>All 7 tutorial quests driving the opening loop</li></ul></div>
+    <div class="card"><span class="badge b-coral">What's blocking AAA feel</span><h3>The three actual gaps</h3><ul><li>No visual renderer — the terminal is a prototype shell, not a game</li><li>No audio — silence is the single biggest quality signal players use</li><li>No "juice" — hit effects, screen shake, particle bursts, transitions</li><li>No real UI system — health bars, quest log, dialogue box need design</li><li>No main menu / loading / game-over screens</li></ul></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-blue">Current prototype</span>
+    <h3>Playable terminal demo status</h3>
+    <ul>
+      <li><strong>Core loop is live:</strong> `crawler.py` starts the game, `src/game.py` runs the turn loop and UI render.</li>
+      <li>Working actions: movement, talk, open, inventory, craft, attack, use, equip, pickup, shop, companion modes, save/load/checkpoint.</li>
+      <li>Quest progression and completion notifications now display immediately during play.</li>
+      <li>World state includes map rendering, entity positions, objects, hazards, and enemy turns.</li>
+      <li>Unit tests for the core prototype are passing with `unittest discover tests`.</li>
+    </ul>
+  </div>
+  <div class="info"><strong>The leverage point:</strong> Port your Python logic to JavaScript first (it maps almost 1:1), then build the visual layer on top. Your JSON data files, quest structure, and combat math all survive the port unchanged. You are not starting over — you are adding a face to what already works.</div>
+  <button class="ask" onclick="sendPrompt('Show me how to port the Python game state and combat logic to JavaScript, keeping the JSON data files intact')">Port Python → JavaScript ↗</button>
+</div>
+
+<!-- ENGINE CHOICE -->
+<div id="engine" class="sec">
+  <p class="sub" style="margin-bottom:1rem">The single most important decision. Get this wrong and you fight your tools forever.</p>
+  <div class="warn"><strong>Recommendation for this project: Phaser 3 + web, packaged with Electron/Tauri for desktop.</strong> Here's why every other option loses for your specific situation.</div>
+  <div class="card" style="margin-bottom:12px;border:2px solid #1D9E75">
+    <span class="badge b-teal">Recommended</span>
+    <h3>Phaser 3 (web-first, JavaScript)</h3>
+    <ul>
+      <li>Your existing JS game logic ports directly — same language, same data structures</li>
+      <li>Built-in tilemap rendering (Tiled .tmx format, which your map already almost matches)</li>
+      <li>Scene system handles main menu, game, pause, game-over as separate scenes</li>
+      <li>Web Audio API integration built in — sound is one require() call away</li>
+      <li>Particle system, tweens, camera shake all built in — juice is free</li>
+      <li>Package with Electron or Tauri for Windows/Mac desktop builds, zero code changes</li>
+      <li>Active community, excellent docs, MIT license</li>
+    </ul>
+    <div class="pill-row"><span class="pill">phaser.io</span><span class="pill">free & open source</span><span class="pill">web + desktop</span><span class="pill">your code language</span></div>
+  </div>
+  <div class="grid3">
+    <div class="card"><span class="badge b-gray">Skip</span><h3>Godot 4</h3><p>Excellent engine but forces a Python→GDScript rewrite of all your logic. GDScript is similar but not the same — every function, class, and JSON parser needs manual conversion. Adds 4–6 weeks of rework for no gameplay benefit.</p></div>
+    <div class="card"><span class="badge b-gray">Skip</span><h3>Unity</h3><p>C# means a full rewrite. Overkill for a tile-based dungeon crawler. The license changes of 2023 make it a poor choice for a solo dev building to distribute. Phaser does everything you need without the overhead.</p></div>
+    <div class="card"><span class="badge b-gray">Skip</span><h3>Pure HTML/JS</h3><p>Fine for the prototype phase (which you've already proven). Does not scale to a real game — no scene management, no asset pipeline, no audio system, no tilemaps. You'll rebuild Phaser badly. Use the real thing.</p></div>
+  </div>
+  <button class="ask" onclick="sendPrompt('Set up a Phaser 3 project for Dungeon Crawler Carl — show me the project structure and how to load the existing JSON data files and tilemap')">Set up Phaser 3 project ↗</button>
+</div>
+
+<!-- VISUAL ART -->
+<div id="visual" class="sec">
+  <div class="info"><strong>The visual identity of this game is already defined by the books.</strong> Dark, grimy dungeon with flashes of absurdist brightness (Donut's fur, explosion effects, System announcements in garish amber). Lean into that contrast — it's your aesthetic.</div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-purple">Art style decision</span><h3>16×16 pixel art — the right call</h3><ul><li>Achievable solo without hiring an artist</li><li>Tilesets for dungeon environments exist free (Kenney.nl, itch.io) as a starting point</li><li>16px tiles on a 12×12 grid = 192×192 game viewport — scales beautifully to any screen</li><li>Character sprites: Carl (boxer shorts, jacket), Donut (fluffy Persian), Mordecai (Chupacabra) — each 16×16, 4-frame walk cycle minimum</li><li>Free tools: Aseprite ($20, worth every cent), or Libresprite (free fork)</li></ul></div>
+    <div class="card"><span class="badge b-amber">Atmosphere layer</span><h3>What makes it look premium</h3><ul><li>Animated tiles: flickering torches, dripping water, chest glow</li><li>Parallax background behind the tilemap — subtle depth</li><li>Post-processing: a very slight vignette and scanline overlay (pure CSS, no render cost)</li><li>Color palette: 32-color limit forces coherence — deep stone grays, amber fire, teal for Donut moments, red for System danger alerts</li><li>Day/night system per floor (Floor 1 savannas are bright; deeper floors get darker)</li></ul></div>
+  </div>
+  <div class="card" style="margin-bottom:12px"><span class="badge b-blue">Immediate wins (this week)</span><h3>Before drawing a single pixel</h3><ul><li>Download the free Kenney Tiny Dungeon tileset — it covers walls, floors, chests, NPCs, enemies. Placeholder for everything while you build systems.</li><li>Set up Phaser 3 with a Tiled tilemap — your existing map.txt converts to Tiled in under an hour</li><li>Add a CRT/vignette CSS overlay to the canvas — takes 10 lines and immediately makes it look intentional</li><li>Use Phaser's built-in tween system for a simple tile pulse on the player position — makes it feel alive instantly</li></ul></div>
+  <button class="ask" onclick="sendPrompt('Show me how to set up a Tiled tilemap in Phaser 3 using the Kenney Tiny Dungeon tileset, loading from the existing map data')">Set up tilemap in Phaser 3 ↗</button>
+</div>
+
+<!-- GAME FEEL -->
+<div id="feel" class="sec">
+  <div class="warn"><strong>Game feel is the highest return-on-investment work in game dev.</strong> One afternoon of "juice" makes players think the whole game is more polished than it is. This is not optional — it is what separates indie from AAA-indie.</div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-amber">Combat juice — do these first</span><h3>Impact feedback</h3><ul><li>Screen shake on every hit — Phaser camera.shake(), 2 lines of code</li><li>Hit flash: enemy sprite flashes white for 80ms on damage received</li><li>Damage number floats up from the hit position and fades out</li><li>Death animation: enemy sprite scales up briefly then disappears (tween)</li><li>Carl's attacks: brief forward lunge animation before the hit resolves</li></ul></div>
+    <div class="card"><span class="badge b-teal">Movement juice — makes exploration satisfying</span><h3>Locomotion feel</h3><ul><li>Smooth movement: instead of snapping tile-to-tile, tween the player over 80–100ms — makes grid movement feel fluid not janky</li><li>Donut's follow: she moves 1 frame after Carl with a slight ease-out — feels organic</li><li>Footstep sounds timed to movement (one per tile crossed)</li><li>Tile landing: a tiny scale bounce (1.0 → 1.05 → 1.0) on the player sprite each step</li></ul></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-purple">UI juice — quest & System</span><h3>Feedback moments</h3><ul><li>Quest complete: amber banner slides in from top, holds 2s, fades out</li><li>System announcements: text types out character-by-character with a blinking cursor</li><li>Level up: brief full-screen amber flash at 20% opacity with a triumphant sound</li><li>Inventory open: panel slides in from the right with ease-out (CSS transform)</li><li>New item found: glow pulse on the item tile before pickup</li></ul></div>
+    <div class="card"><span class="badge b-coral">Audio — the most underrated pillar</span><h3>Sound design priorities</h3><ul><li>Footsteps (stone floor sound, different for Carl vs Donut)</li><li>Attack swing + hit impact (two separate sounds — swing then thud)</li><li>Explosion (this is Carl's signature — make it satisfying)</li><li>Chest open (satisfying click + shimmer)</li><li>System announcement jingle (brief alien-sounding motif)</li><li>Ambient dungeon loop (distant drips, low rumble)</li><li>Source: freesound.org, Kenney audio packs — all free</li></ul></div>
+  </div>
+  <button class="ask" onclick="sendPrompt('Show me Phaser 3 code for: screen shake on hit, floating damage numbers, and smooth tile-to-tile movement tweening')">Add juice to Phaser 3 ↗</button>
+</div>
+
+<!-- CONTENT DEPTH -->
+<div id="content" class="sec">
+  <div class="info"><strong>Content depth is the last pillar to build, not the first.</strong> A game with great feel and no content is a tech demo. A game with bad feel and great content is unplayable. But if feel is there, even modest content can carry a full game.</div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-teal">Tutorial Guild (done)</span><h3>Depth it still needs</h3><ul><li>Mordecai's 3-dialogue cycle → expand to 8–10 lines that escalate in stress</li><li>Donut's ambient commentary per tile type (she hates the water tiles, loves the shop)</li><li>Tutorial chest should have a cinematic open sequence, not just a message</li><li>Add a second NPC in the guild — a fellow crawler who gives bad advice</li><li>System announcements on every quest completion, not just first ones</li></ul></div>
+    <div class="card"><span class="badge b-amber">Floor 1 — build this next</span><h3>Minimum viable first floor</h3><ul><li>4×3 rooms connected by corridors (48 tiles wide total) — manageable scope</li><li>3 enemy types: training goblin, patrol kobold, sleeping crawler-turned-enemy</li><li>1 mini-boss room with a named enemy and a pre-fight System announcement</li><li>2 saferoom doors (one locked, one open) — teach the saferoom mechanic</li><li>The collapse timer becomes real here — 200-turn hard deadline</li></ul></div>
+  </div>
+  <div class="card" style="margin-bottom:12px"><span class="badge b-purple">Crafting — Carl's identity system</span><h3>What it needs to feel right</h3><ul><li>Discovery-based recipes: Carl figures them out by combining items, not reading a menu. First time he crafts an explosive, the System mocks him for discovering it by accident.</li><li>3 starting recipes accessible from tutorial materials</li><li>Crafting UI: a simple 2-slot combine interface with a "Try it" button — no recipe book initially</li><li>Failed crafts produce a flavorful failure message from the System, not silence</li><li>Explosion radius visualized on the grid before throwing — tactical preview</li></ul></div>
+  <button class="ask" onclick="sendPrompt('Design the Floor 1 map layout for Dungeon Crawler Carl — rooms, corridors, enemy placements, saferooms, and the collapse timer integration')">Design Floor 1 ↗</button>
+</div>
+
+<!-- POLISH & UX -->
+<div id="polish" class="sec">
+  <div class="info"><strong>Polish is not decoration — it is information design.</strong> Every screen transition, loading state, and error message is a communication to the player. AAA-indie games feel polished because every state is handled intentionally.</div>
+  <div class="grid2">
+    <div class="card"><span class="badge b-purple">Screens you need</span><h3>The full screen inventory</h3><ul><li>Title screen — dark, atmospheric, Donut visible in the corner judging you</li><li>New game / Continue / Options — minimal menu, keyboard navigable</li><li>Tutorial intro — System announcement that plays before control is given</li><li>Pause screen — the dungeon freezes, System makes a comment about stopping</li><li>Game over — death screen with cause of death and the System's commentary on it</li><li>Floor transition — countdown + "Entering Floor X" animation</li><li>Victory screen (tutorial complete) — viewer count reveal, quest summary</li></ul></div>
+    <div class="card"><span class="badge b-blue">UX improvements to existing systems</span><h3>What the prototype teaches wrong</h3><ul><li>Replace the keyboard shortcut wall with a contextual controls bar — show only relevant actions for what Carl is adjacent to</li><li>Quest log needs a collapsible UI, not a raw text dump</li><li>Inventory should show item stats on hover before equipping</li><li>Dialogue needs a speaker portrait, not just a name prefix</li><li>Save should auto-happen on saferoom entry, not require a keypress</li><li>The "No Pants" debuff should have a visible indicator on Carl's sprite, not just a stat line</li></ul></div>
+  </div>
+  <div class="card" style="margin-bottom:12px"><span class="badge b-amber">Accessibility (don't skip this)</span><h3>Minimum viable accessibility for web release</h3><ul><li>Colorblind mode: all color-coded elements (enemy HP, terrain type) get a secondary shape indicator</li><li>Text size: UI text should scale with browser font settings</li><li>Reduced motion: all tweens and shakes should be skippable via a toggle</li><li>Keyboard-only: every action must be reachable without mouse — this is already true but needs testing</li><li>Pause on focus loss: browser tab switching should auto-pause the turn timer</li></ul></div>
+  <button class="ask" onclick="sendPrompt('Design the title screen and main menu for Dungeon Crawler Carl using Phaser 3, with the dark dungeon aesthetic and System voice introduction')">Design the title screen ↗</button>
+</div>
+
+<!-- BUILD SEQUENCE -->
+<div id="sequence" class="sec">
+  <div class="warn"><strong>Do not work on all four pillars simultaneously.</strong> The sequence below is designed so each week produces something playable and demoable. If you follow it, you will have a shippable demo in 12–14 weeks of consistent solo work.</div>
+
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-teal">Weeks 1–2 — engine port</span>
+    <h3>Port Python logic to Phaser 3</h3>
+    <ul>
+      <li>Set up Phaser 3 project with Vite (fast dev server, easy Electron packaging later)</li>
+      <li>Port <code>game_state.js</code>, <code>world.js</code>, <code>combat.js</code>, <code>quests.js</code> — your Python maps almost directly</li>
+      <li>Load existing JSON data files (characters, items, dialogue, recipes) unchanged</li>
+      <li>Load tutorial_guild_map.txt as a Tiled tilemap</li>
+      <li>Placeholder graphics only (Kenney Tiny Dungeon) — do not make art yet</li>
+      <li><strong>Milestone:</strong> the tutorial guild is playable in a browser window with placeholder art</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-amber">Weeks 3–4 — juice pass</span>
+    <h3>Game feel before any new content</h3>
+    <ul>
+      <li>Smooth movement tweens (80ms per tile)</li>
+      <li>Screen shake + hit flash + floating damage numbers</li>
+      <li>System announcement typewriter effect</li>
+      <li>Quest complete banner animation</li>
+      <li>Ambient sound loop + footsteps + one explosion sound</li>
+      <li><strong>Milestone:</strong> show someone the game — they should say "this feels good" before asking about content</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-purple">Weeks 5–7 — art pass</span>
+    <h3>Replace placeholder art with custom pixel art</h3>
+    <ul>
+      <li>Carl sprite: 16×16, 4-direction walk cycle (4 frames each), idle, attack</li>
+      <li>Donut sprite: 16×16, walk cycle, idle (make her fluffy and proud)</li>
+      <li>Mordecai sprite: 16×16, Chupacabra form, stressed idle animation</li>
+      <li>Tileset: dungeon walls, floor, desk, chest, hazard tiles (custom or modified Kenney)</li>
+      <li>UI panels: health bars, quest log, dialogue box — styled to the dark/amber aesthetic</li>
+      <li><strong>Milestone:</strong> screenshot looks like a game you'd pay for</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-blue">Weeks 8–10 — Floor 1 content</span>
+    <h3>The first full floor</h3>
+    <ul>
+      <li>Design and build Floor 1 map (4×3 rooms, corridors, saferooms)</li>
+      <li>3 enemy types with distinct behavior (patrol, stationary, reactive)</li>
+      <li>Crafting UI with discovery-based recipes</li>
+      <li>The collapse timer as a visible, ticking, increasingly dramatic countdown</li>
+      <li>Floor transition screen with System commentary</li>
+      <li><strong>Milestone:</strong> a complete play loop — tutorial → Floor 1 → death or completion</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <span class="badge b-coral">Weeks 11–12 — polish & screens</span>
+    <h3>Every screen handled, no rough edges</h3>
+    <ul>
+      <li>Title screen, main menu, game over, pause screen</li>
+      <li>Auto-save on saferoom entry</li>
+      <li>Contextual controls bar replacing the keyboard wall</li>
+      <li>Accessibility: colorblind mode, reduced motion toggle</li>
+      <li>Electron packaging for desktop builds (add this last — it is 1 config file)</li>
+      <li><strong>Milestone:</strong> this is your itch.io demo release</li>
+    </ul>
+  </div>
+
+  <button class="ask" onclick="sendPrompt('Set up a Phaser 3 + Vite project scaffolded for Dungeon Crawler Carl — show the full file structure and the first scene file')">Start Week 1 right now ↗</button>
+</div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+</script>

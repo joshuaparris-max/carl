@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dungeon Crawler Carl - Browser Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --panel: #151417;
+      --panel-2: #1c1917;
+      --line: rgba(232, 160, 48, .24);
+      --amber: #e8a030;
+      --amber-soft: rgba(232, 160, 48, .18);
+      --teal: #2ecfaa;
+      --red: #e84040;
+      --green: #45d483;
+      --yellow: #e5c94b;
+      --purple: #b979ff;
+      --text: #f6ead6;
+      --muted: #9c9284;
+      --stone: #242226;
+      --floor: #121215;
+      --blue-white: #cfe8ff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 40% 0%, rgba(232, 160, 48, .08), transparent 34%),
+        radial-gradient(circle at 90% 80%, rgba(46, 207, 170, .055), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.022) 25%, transparent 25%) 0 0 / 4px 4px,
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    .game-shell {
+      height: 100vh;
+      min-width: 1180px;
+      min-height: 690px;
+      display: grid;
+      grid-template-columns: 220px minmax(620px, 1fr) 260px;
+      grid-template-rows: minmax(0, 1fr) 120px;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .panel {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)), var(--panel);
+      box-shadow: 0 22px 65px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
+      overflow: hidden;
+    }
+
+    .left-panel, .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .center-panel {
+      display: grid;
+      grid-template-rows: 62px minmax(0, 1fr);
+      padding: 12px;
+      gap: 10px;
+    }
+
+    .bottom-bar {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .portrait {
+      border: 1px solid var(--amber);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(232,160,48,.14), rgba(0,0,0,.1));
+      padding: 10px;
+      position: relative;
+    }
+    .portrait.donut { border-color: var(--teal); background: linear-gradient(180deg, rgba(46,207,170,.12), rgba(0,0,0,.08)); }
+    .portrait-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--amber);
+      font-weight: 800;
+    }
+    .donut .portrait-title { color: var(--teal); }
+    .ascii {
+      height: 74px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(0,0,0,.24);
+      color: #ffe1a0;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      white-space: pre;
+      text-align: center;
+      line-height: 1.05;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+    .donut .ascii { color: #b9fff0; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin: 6px 0;
+    }
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: #070708;
+      border: 1px solid rgba(255,255,255,.08);
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      transition: width .25s ease, background .25s ease;
+    }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+    .badge {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 3px 7px;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+      text-transform: uppercase;
+    }
+    .badge.danger { color: #fff0f0; background: rgba(232,64,64,.22); border-color: rgba(232,64,64,.55); }
+    .badge.teal { color: #d9fff7; background: rgba(46,207,170,.13); border-color: rgba(46,207,170,.45); }
+    .badge.amber { color: #ffe6ae; background: rgba(232,160,48,.16); border-color: rgba(232,160,48,.45); }
+
+    .mini-panel {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      background: rgba(0,0,0,.16);
+      padding: 10px;
+    }
+    .mini-title {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 8px;
+    }
+    .inventory-list {
+      display: grid;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .item-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      padding-bottom: 5px;
+    }
+
+    .timer-card {
+      display: grid;
+      grid-template-columns: 1fr 145px;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(232,160,48,.18);
+      background: linear-gradient(90deg, rgba(232,160,48,.1), rgba(232,64,64,.04));
+    }
+    .timer-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: .1em;
+      font-weight: 800;
+    }
+    .timer-number {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      text-align: right;
+      font-weight: 800;
+      color: var(--green);
+      text-shadow: 0 0 18px rgba(69,212,131,.25);
+    }
+    .timer-number.warning { color: var(--yellow); text-shadow: 0 0 18px rgba(229,201,75,.25); }
+    .timer-number.danger { color: var(--red); text-shadow: 0 0 18px rgba(232,64,64,.25); }
+
+    .grid-wrap {
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      border-radius: 14px;
+      background: radial-gradient(circle at center, rgba(232,160,48,.055), transparent 62%), rgba(0,0,0,.2);
+      border: 1px solid rgba(255,255,255,.06);
+      padding: 12px;
+    }
+    .dungeon-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(34px, 4.6vw));
+      grid-template-rows: repeat(12, minmax(34px, 4.6vw));
+      gap: 4px;
+      max-width: min(660px, 100%);
+      max-height: min(660px, 100%);
+      aspect-ratio: 1 / 1;
+    }
+    .cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 0;
+      border-radius: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      font-size: clamp(13px, 2.1vw, 22px);
+      color: rgba(255,255,255,.58);
+      background: var(--floor);
+      border: 1px solid rgba(255,255,255,.045);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+      transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease, background .14s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cell:hover { transform: translateY(-1px); border-color: rgba(232,160,48,.35); box-shadow: 0 0 18px rgba(232,160,48,.1); }
+    .wall {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.04) 25%, transparent 25%) 0 0 / 7px 7px,
+        linear-gradient(45deg, rgba(0,0,0,.28), transparent),
+        var(--stone);
+      color: #5a5557;
+      border-color: rgba(0,0,0,.4);
+      box-shadow: inset 0 0 16px rgba(0,0,0,.45);
+    }
+    .desk { background: linear-gradient(180deg, #5c3518, #351d0d); color: #d59a52; border-color: rgba(232,160,48,.25); }
+    .npc { color: var(--amber); box-shadow: 0 0 20px rgba(232,160,48,.22), inset 0 0 12px rgba(232,160,48,.08); }
+    .merchant { color: var(--purple); box-shadow: 0 0 18px rgba(185,121,255,.22); }
+    .player { color: var(--blue-white); animation: pulsePlayer 1.5s infinite; background: radial-gradient(circle, rgba(207,232,255,.2), var(--floor) 62%); }
+    .player.moved { animation: movePop .22s ease, pulsePlayer 1.5s infinite; }
+    .donut-cell { color: var(--teal); background: radial-gradient(circle, rgba(46,207,170,.18), var(--floor) 62%); box-shadow: 0 0 18px rgba(46,207,170,.22); }
+    .enemy { color: #ffb1b1; background: radial-gradient(circle, rgba(232,64,64,.2), #170d0d 70%); box-shadow: 0 0 18px rgba(232,64,64,.22); }
+    .enemy.hit { animation: redFlash .35s ease; }
+    .chest { color: #ffd66c; background: radial-gradient(circle, rgba(232,160,48,.32), #211507 68%); animation: treasureGlow 1.2s infinite alternate; }
+    .shop { color: #ffe073; background: radial-gradient(circle, rgba(255,224,115,.24), #211807 70%); animation: shimmer 1.6s infinite; }
+    .hazard { color: #92d7ff; background: linear-gradient(120deg, rgba(36,132,170,.2), rgba(0,0,0,.18)); animation: waterShimmer 1.4s infinite linear; }
+    .trap { color: var(--red); background: radial-gradient(circle, rgba(232,64,64,.2), #1d0c0c 70%); }
+    .rough { color: #d6d6d6; background: linear-gradient(135deg, #1f1d1d, #141414); }
+    .pickup { color: #dcffe9; background: radial-gradient(circle, rgba(255,255,255,.18), #121416 70%); box-shadow: 0 0 16px rgba(255,255,255,.16); }
+    .potion { color: #8fffad; background: radial-gradient(circle, rgba(69,212,131,.22), #0d1c13 70%); }
+    .cell-hp {
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      bottom: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.5);
+      overflow: hidden;
+    }
+    .cell-hp span { display: block; height: 100%; background: var(--red); transition: width .2s ease; }
+
+    .system-box {
+      flex: 0 0 190px;
+      display: flex;
+      flex-direction: column;
+      background: #090909;
+      border: 1px solid rgba(232,160,48,.34);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: inset 0 0 20px rgba(232,160,48,.045);
+      min-height: 0;
+    }
+    .system-title {
+      color: var(--amber);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .system-log {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 7px;
+      overflow: hidden;
+      flex: 1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #f2b85c;
+    }
+    .sys-line { opacity: .78; }
+    .sys-line.new { animation: slideIn .35s ease; opacity: 1; }
+    .cursor { color: var(--amber); animation: blink 1s steps(2, start) infinite; }
+
+    .quest-box {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .quest-list {
+      overflow: hidden;
+      display: grid;
+      gap: 7px;
+      min-height: 0;
+    }
+    .quest-card {
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px;
+      background: rgba(0,0,0,.18);
+      padding: 7px 8px;
+      display: grid;
+      grid-template-columns: 17px 1fr;
+      gap: 7px;
+      align-items: start;
+    }
+    .quest-check {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(232,160,48,.6);
+      margin-top: 2px;
+    }
+    .quest-card.done { opacity: .45; }
+    .quest-card.done .quest-check { background: var(--amber); }
+    .quest-card.done .quest-name { text-decoration: line-through; }
+    .quest-name { font-size: 11px; font-weight: 800; color: var(--text); }
+    .quest-desc { font-size: 10px; color: var(--muted); line-height: 1.25; margin-top: 2px; }
+
+    .viewer-box { flex: 0 0 134px; }
+    .viewer-row { margin-bottom: 8px; }
+    .viewer-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .viewer-fill { height: 100%; background: linear-gradient(90deg, var(--amber), #ffdb7b); transition: width .25s ease; }
+    .viewer-fill.teal { background: linear-gradient(90deg, var(--teal), #a4ffed); }
+
+    .controls-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-content: start;
+      margin-bottom: 8px;
+    }
+    .control-pill {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 4px 7px;
+      border: 1px solid rgba(232,160,48,.32);
+      color: #f7cf88;
+      background: rgba(232,160,48,.08);
+    }
+    .command-row {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      align-items: center;
+      border: 1px solid rgba(232,160,48,.4);
+      border-radius: 12px;
+      background: rgba(0,0,0,.36);
+      padding: 9px 12px;
+      font-family: "JetBrains Mono", monospace;
+    }
+    .prompt { color: var(--amber); font-weight: 800; }
+    #commandInput {
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      caret-color: var(--amber);
+      width: 100%;
+    }
+    .bottom-timer {
+      display: grid;
+      align-content: center;
+      gap: 8px;
+    }
+    .floor-bar {
+      height: 18px;
+      border-radius: 999px;
+      background: #070707;
+      border: 1px solid rgba(255,255,255,.08);
+      overflow: hidden;
+    }
+    .floor-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+      transition: width .2s ease;
+    }
+    .floor-caption { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+
+    .banner {
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-18px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      border: 1px solid rgba(232,160,48,.6);
+      border-radius: 999px;
+      background: rgba(12,10,6,.92);
+      color: var(--amber);
+      font-weight: 900;
+      letter-spacing: .08em;
+      padding: 10px 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,.42), 0 0 32px rgba(232,160,48,.16);
+    }
+    .banner.show { animation: questBanner 2s ease forwards; }
+
+    @keyframes pulsePlayer {
+      0%, 100% { box-shadow: 0 0 12px rgba(207,232,255,.15); }
+      50% { box-shadow: 0 0 24px rgba(207,232,255,.36); }
+    }
+    @keyframes movePop { 0% { transform: scale(.82); } 100% { transform: scale(1); } }
+    @keyframes redFlash { 0%, 100% { filter: none; } 35% { background: #ff2d2d; color: #fff; } }
+    @keyframes treasureGlow { from { box-shadow: 0 0 12px rgba(232,160,48,.18); } to { box-shadow: 0 0 30px rgba(232,160,48,.45); } }
+    @keyframes shimmer { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.35); } }
+    @keyframes waterShimmer { from { background-position: 0 0; } to { background-position: 40px 0; } }
+    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes slideIn { from { transform: translateX(32px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes questBanner {
+      0% { opacity: 0; transform: translateX(-50%) translateY(-18px); }
+      14%, 82% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-18px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner" id="questBanner"></div>
+  <main class="game-shell">
+    <aside class="panel left-panel">
+      <section class="portrait">
+        <div class="portrait-title"><span>Carl</span><span id="carlLevel">LVL 1</span></div>
+        <div class="ascii">╔CARL╗
+╚╦J╦╝
+ / \ 
+NO PANTS</div>
+        <div class="stat-row"><span>HP</span><span id="carlHpText">12/12</span></div>
+        <div class="bar"><div class="bar-fill" id="carlHp"></div></div>
+        <div class="stat-row"><span>Armor</span><span id="carlArmor">1</span></div>
+        <div class="stat-row"><span>Gear</span><span id="carlGear">Leather Jacket</span></div>
+        <div class="badge-row" id="carlBadges"></div>
+      </section>
+
+      <section class="portrait donut">
+        <div class="portrait-title"><span>Princess Donut</span><span id="donutLevel">LVL 0</span></div>
+        <div class="ascii"> /\_/\
+( o.o )
+ > ♛ <
+GRAND CHAMPION</div>
+        <div class="stat-row"><span>HP</span><span id="donutHpText">5/5</span></div>
+        <div class="bar"><div class="bar-fill" id="donutHp"></div></div>
+        <div class="stat-row"><span>Mode</span><span id="donutMode">follow</span></div>
+        <div class="badge-row"><span class="badge teal">Persian</span><span class="badge teal">Civilian</span></div>
+      </section>
+
+      <section class="mini-panel">
+        <div class="mini-title">Inventory</div>
+        <div class="inventory-list" id="inventoryList"></div>
+      </section>
+    </aside>
+
+    <section class="panel center-panel">
+      <div class="timer-card">
+        <div>
+          <div class="timer-label">Floor Collapse Countdown</div>
+          <div class="stat-row"><span>Tutorial Guild / Controlled Disaster</span><span id="turnCount">Turn 0</span></div>
+        </div>
+        <div class="timer-number" id="timerNumber">100</div>
+      </div>
+      <div class="grid-wrap">
+        <div class="dungeon-grid" id="dungeonGrid" aria-label="Dungeon grid"></div>
+      </div>
+    </section>
+
+    <aside class="panel right-panel">
+      <section class="system-box">
+        <div class="system-title">Alien Broadcast System <span class="cursor">▌</span></div>
+        <div class="system-log" id="systemLog"></div>
+      </section>
+
+      <section class="quest-box mini-panel">
+        <div class="mini-title">Quest Log</div>
+        <div class="quest-list" id="questList"></div>
+      </section>
+
+      <section class="viewer-box mini-panel">
+        <div class="mini-title">Viewer Pressure</div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Party</span><span id="partyViewerText">0</span></div>
+          <div class="bar"><div class="viewer-fill" id="partyViewer"></div></div>
+        </div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Carl</span><span id="carlViewerText">0</span></div>
+          <div class="bar"><div class="viewer-fill" id="carlViewer"></div></div>
+        </div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Donut</span><span id="donutViewerText">4</span></div>
+          <div class="bar"><div class="viewer-fill teal" id="donutViewer"></div></div>
+        </div>
+      </section>
+    </aside>
+
+    <footer class="panel bottom-bar">
+      <div>
+        <div class="controls-line" id="controlsLine"></div>
+        <div class="command-row">
+          <div class="prompt">&gt;</div>
+          <input id="commandInput" autocomplete="off" spellcheck="false" aria-label="Action command" placeholder="Type a command or use keyboard shortcuts">
+        </div>
+      </div>
+      <div class="bottom-timer">
+        <div class="floor-caption">Floor timer integrity</div>
+        <div class="floor-bar"><div class="floor-fill" id="floorFill"></div></div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const maxTimer = 100;
+    const baseGrid = [
+      "############",
+      "#..........#",
+      "#..........#",
+      "#..........#",
+      "#.....M....#",
+      "#...====...#",
+      "#..........#",
+      "#..........#",
+      "#..........#",
+      "#DC........#",
+      "#..........#",
+      "############"
+    ].map(row => row.split(""));
+
+    const state = {
+      turn: 0,
+      timer: 100,
+      systemLog: [],
+      lastMoved: false,
+      lastHitEnemy: null,
+      entities: {
+        carl: {
+          id: "carl", name: "Carl", symbol: "C", x: 2, y: 9, level: 1, xp: 0, hp: 12, maxHp: 12,
+          armor: 1, stats: { strength: 5, dexterity: 4, charisma: 3 }, inventory: ["leather_jacket"],
+          equipment: { torso: "leather_jacket" }, debuffs: ["no_pants"], type: "player"
+        },
+        donut: {
+          id: "donut", name: "Princess Donut", symbol: "D", x: 1, y: 9, level: 0, xp: 0, hp: 5, maxHp: 5,
+          armor: 0, stats: { strength: 1, dexterity: 7, charisma: 9 }, inventory: [],
+          equipment: {}, debuffs: ["civilian"], mode: "follow", title: "Grand Champion", type: "companion"
+        },
+        mordecai: { id: "mordecai", name: "Mordecai", symbol: "M", x: 6, y: 4, hp: 20, maxHp: 20, armor: 0, type: "npc" },
+        bopca: { id: "bopca", name: "Bopca Clerk", symbol: "B", x: 9, y: 6, hp: 10, maxHp: 10, armor: 0, type: "npc" },
+        goblin: { id: "goblin", name: "Training Goblin", symbol: "g", x: 8, y: 8, hp: 6, maxHp: 6, armor: 0, type: "monster" }
+      },
+      objects: [
+        { id: "chest", name: "Tutorial Chest", symbol: "?", x: 7, y: 2, type: "chest", opened: false, contains: ["unstable_powder"] },
+        { id: "pants", name: "Threadbare Pants", symbol: "!", x: 2, y: 7, type: "pickup", picked: false, item: "threadbare_pants" },
+        { id: "potion", name: "Stale Healing Bar", symbol: "p", x: 3, y: 7, type: "pickup", picked: false, item: "stale_healing_bar" },
+        { id: "shop", name: "Overpriced Tutorial Kiosk", symbol: "$", x: 9, y: 7, type: "shop", stock: ["stale_healing_bar"] }
+      ],
+      hazards: [
+        { id: "grime", name: "Suspicious Grime Patch", symbol: "~", x: 4, y: 8, effect: "filth", severity: 0 },
+        { id: "rough", name: "Rough Tile", symbol: "^", x: 5, y: 8, effect: "rough", severity: 1 },
+        { id: "trap", name: "Training Trap", symbol: "^", x: 6, y: 8, effect: "trap", severity: 3 }
+      ],
+      items: {
+        leather_jacket: { name: "Carl's Leather Jacket", slot: "torso", armor: 1, durability: 12, tags: ["equipment"] },
+        unstable_powder: { name: "Unstable Dungeon Powder", slot: "material", craftingPower: 2, tags: ["material", "explosive_component"] },
+        crude_blast_charge: { name: "Crude Blast Charge", slot: "combat_item", damage: 4, accuracy: 90, tags: ["explosive", "consumable"] },
+        threadbare_pants: { name: "Threadbare Tutorial Pants", slot: "legs", armor: 1, durability: 5, tags: ["equipment"] },
+        stale_healing_bar: { name: "Stale Healing Bar", slot: "consumable", healing: 4, tags: ["healing", "consumable"] }
+      },
+      quests: [
+        q("speak", "Listen Before Dying", "Talk to Mordecai and learn the first survival rules.", "spoke_to_mordecai"),
+        q("inventory", "Inventory Check", "Confirm the jacket is real gear and the lack of pants is real trouble.", "inspected_inventory"),
+        q("chest", "Questionable Gift", "Open the tutorial chest and recover the first explosive material.", "opened_tutorial_chest"),
+        q("craft", "Carl Makes A Problem", "Craft the first crude explosive from dungeon materials.", "crafted_first_explosive"),
+        q("blood", "First Blood", "Defeat the tutorial enemy without pretending this is normal.", "defeated_enemy"),
+        q("pants", "Dress Code Violation", "Find something, anything, that counts as pants.", "picked_up_item"),
+        q("flooring", "Bad Flooring", "Learn that terrain can hate you too.", "triggered_hazard")
+      ],
+      viewer: { party: 0, carl: 0, donut: 4 },
+      dialogueIndex: { mordecai: 0, bopca: 0 },
+      checkpoint: null
+    };
+
+    const dialogue = {
+      mordecai: [
+        "Mordecai: Listen carefully. You are alive, classless, underdressed, and already behind schedule. That is not a strategy.",
+        "Mordecai: The cat is Level 0. Civilian. Do not let her get hit. Do not let yourself get hit either, but especially do not let the cat get hit.",
+        "Mordecai: The System has rules. Bad rules. Cruel rules. But rules can be used, and that is the only reason I am still talking to you."
+      ],
+      bopca: [
+        "Bopca Clerk: You want affordable prices? That is adorable. I sell survival, not hope.",
+        "Bopca Clerk: The cat gets a discount if she stops staring at me like that."
+      ]
+    };
+
+    const controls = [
+      "WASD move", "X attack", "U use", "T talk", "O open", "I inventory", "C craft",
+      "E equip", "P pickup", "B buy", "F/H/R Donut", "V save", "L load", "K checkpoint", "Q quit"
+    ];
+
+    function q(id, name, desc, event) {
+      return { id, name, desc, event, current: 0, target: 1, complete: false };
+    }
+
+    function system(text) {
+      state.systemLog.push("SYSTEM: " + text);
+      state.systemLog = state.systemLog.slice(-5);
+      renderSystem();
+    }
+
+    function completeQuest(event) {
+      for (const quest of state.quests) {
+        if (quest.event === event && !quest.complete) {
+          quest.current = Math.min(quest.target, quest.current + 1);
+          if (quest.current >= quest.target) {
+            quest.complete = true;
+            showBanner("QUEST COMPLETE — " + quest.name);
+          }
+        }
+      }
+    }
+
+    function changeViewer(which, amount, reason) {
+      state.viewer[which] = Math.max(0, state.viewer[which] + amount);
+      state.viewer.party = Math.max(0, state.viewer.party + Math.max(0, Math.floor(amount / 2)));
+      if (state.viewer.party >= 10) {
+        system("Sponsor interest detected. Somewhere, someone with too much money enjoyed that.");
+        state.viewer.party = 0;
+      }
+    }
+
+    function tileAt(x, y) {
+      if (y < 0 || y >= baseGrid.length || x < 0 || x >= baseGrid[0].length) return "#";
+      return baseGrid[y][x];
+    }
+
+    function entityAt(x, y) {
+      return Object.values(state.entities).find(e => e.x === x && e.y === y && e.hp > 0);
+    }
+
+    function objectAt(x, y) {
+      return state.objects.find(o => o.x === x && o.y === y && !o.picked && !(o.type === "chest" && o.opened));
+    }
+
+    function hazardAt(x, y) {
+      return state.hazards.find(h => h.x === x && h.y === y);
+    }
+
+    function blocked(x, y, ignore = []) {
+      if (["#", "="].includes(tileAt(x, y))) return true;
+      const obj = objectAt(x, y);
+      if (obj && obj.blocks) return true;
+      const entity = entityAt(x, y);
+      return entity && !ignore.includes(entity.id);
+    }
+
+    function near(a, b, d = 1) {
+      return Math.abs(a.x - b.x) <= d && Math.abs(a.y - b.y) <= d;
+    }
+
+    function advanceTurn() {
+      state.turn += 1;
+      state.timer = Math.max(0, state.timer - 1);
+      donutSupport();
+      enemyTurn();
+      if ([30, 10, 5].includes(state.timer)) system(`Timer warning: ${state.timer} turns remain. Panic is a renewable resource.`);
+      if (state.timer === 0) system("The floor timer hit zero. This run is over. The System sends thoughts and no prayers.");
+    }
+
+    function move(dx, dy) {
+      const carl = state.entities.carl;
+      const nx = carl.x + dx, ny = carl.y + dy;
+      if (blocked(nx, ny, ["carl"])) {
+        system("Crawler 4411 has located an obstacle. The obstacle remains undefeated.");
+        return true;
+      }
+      const prev = { x: carl.x, y: carl.y };
+      carl.x = nx; carl.y = ny; state.lastMoved = true;
+      followDonut(prev);
+      const hazard = hazardAt(nx, ny);
+      if (hazard) applyHazard(hazard);
+      const npc = nearestNpc();
+      if (npc) system(`${npc.name} is close enough to talk. Press T.`);
+      else donutBanter();
+      completeQuest("player_moved");
+      return true;
+    }
+
+    function followDonut(prev) {
+      const donut = state.entities.donut;
+      if (donut.mode !== "follow") return;
+      if (!blocked(prev.x, prev.y, ["donut", "carl"])) {
+        donut.x = prev.x; donut.y = prev.y;
+        return;
+      }
+      const carl = state.entities.carl;
+      const options = [
+        [Math.sign(carl.x - donut.x), 0], [0, Math.sign(carl.y - donut.y)], [0,-1], [1,0], [0,1], [-1,0]
+      ];
+      for (const [dx, dy] of options) {
+        if ((dx || dy) && !blocked(donut.x + dx, donut.y + dy, ["donut"])) {
+          donut.x += dx; donut.y += dy; return;
+        }
+      }
+    }
+
+    function donutBanter() {
+      const lines = [
+        "Donut: Carl, this floor is unspeakably filthy.",
+        "Donut: I can feel the grime between my toes. This is a hate crime against grooming.",
+        "Donut: My fans must never see me like this. Walk softer."
+      ];
+      system(lines[Math.min(state.dialogueIndex.mordecai, lines.length - 1)]);
+    }
+
+    function applyHazard(hazard) {
+      if (hazard.effect === "trap") {
+        const dmg = Math.max(1, hazard.severity - state.entities.carl.armor);
+        state.entities.carl.hp = Math.max(0, state.entities.carl.hp - dmg);
+        system(`Trap triggered: Carl takes ${dmg} damage. The floor has entered the conversation.`);
+        completeQuest("triggered_hazard");
+      } else if (hazard.effect === "rough") {
+        system("Rough terrain slows Carl down. The System applauds the floor's initiative.");
+        completeQuest("triggered_hazard");
+      } else {
+        system("Donut: Carl, this tile smells like wet garbage with ambition.");
+      }
+    }
+
+    function nearestNpc() {
+      return Object.values(state.entities).find(e => e.type === "npc" && near(state.entities.carl, e));
+    }
+
+    function talk() {
+      const npc = nearestNpc();
+      if (!npc) return system("There is nobody close enough to talk to. Somehow, this is still awkward."), true;
+      const lines = dialogue[npc.id] || [];
+      const idx = state.dialogueIndex[npc.id] || 0;
+      system(lines[idx] || `${npc.name}: ...`);
+      state.dialogueIndex[npc.id] = Math.min(idx + 1, Math.max(0, lines.length - 1));
+      if (npc.id === "mordecai" && idx >= 1) completeQuest("spoke_to_mordecai");
+      return true;
+    }
+
+    function openNearby() {
+      const carl = state.entities.carl;
+      const chest = state.objects.find(o => o.type === "chest" && !o.opened && Math.abs(o.x - carl.x) <= 1 && Math.abs(o.y - carl.y) <= 1);
+      if (!chest) return system("Nothing nearby opens. The desk remains aggressively desk-shaped."), true;
+      chest.opened = true;
+      for (const item of chest.contains) state.entities.carl.inventory.push(item);
+      system("Loot event registered. Try not to treat this as proof you are good at decisions.");
+      completeQuest("opened_tutorial_chest");
+      return true;
+    }
+
+    function inventory() {
+      system("Inventory inspected. NOTICE: Pants have not been located. The System is deeply unsurprised.");
+      completeQuest("inspected_inventory");
+      return true;
+    }
+
+    function craft() {
+      const inv = state.entities.carl.inventory;
+      const idx = inv.indexOf("unstable_powder");
+      if (idx < 0) return system("Carl needs something unstable before he can make something worse."), true;
+      inv.splice(idx, 1);
+      inv.push("crude_blast_charge");
+      system("Crafting update: crude explosive assembled. The viewers have upgraded you from doomed to interesting.");
+      completeQuest("crafted_first_explosive");
+      changeViewer("carl", 4, "crafted explosive");
+      return true;
+    }
+
+    function attack(useItem = false) {
+      const enemy = Object.values(state.entities).find(e => e.type === "monster" && e.hp > 0 && near(state.entities.carl, e, useItem ? 3 : 1));
+      if (!enemy) return system(useItem ? "No enemy is close enough to make this a responsible bad idea." : "Carl swings at the concept of danger. Nothing happens."), true;
+      let dmg = Math.max(0, 2 + Math.floor(state.entities.carl.stats.strength / 2) - enemy.armor);
+      if (useItem) {
+        const inv = state.entities.carl.inventory;
+        const itemIdx = inv.findIndex(id => (state.items[id].tags || []).includes("explosive"));
+        if (itemIdx < 0) return system("Carl has nothing explosively useful ready."), true;
+        const item = inv.splice(itemIdx, 1)[0];
+        dmg = Math.max(0, state.items[item].damage - enemy.armor);
+        changeViewer("carl", 6, "explosive problem solving");
+      } else {
+        changeViewer("carl", 1, "basic violence");
+      }
+      enemy.hp = Math.max(0, enemy.hp - dmg);
+      state.lastHitEnemy = enemy.id;
+      system(`Carl hits ${enemy.name} for ${dmg} damage.`);
+      if (enemy.hp <= 0) {
+        system(`${enemy.name} is defeated. Achievement unlocked: Applied Learning.`);
+        completeQuest("defeated_enemy");
+      }
+      return true;
+    }
+
+    function donutSupport() {
+      const donut = state.entities.donut;
+      const enemy = Object.values(state.entities).find(e => e.type === "monster" && e.hp > 0 && near(donut, e, 2));
+      if (!enemy || donut.mode === "hide") return;
+      enemy.hp = Math.max(0, enemy.hp - 1);
+      state.lastHitEnemy = enemy.id;
+      system(`Donut swipes at ${enemy.name} for 1 damage. The audience makes an undignified noise.`);
+      if (enemy.hp <= 0) {
+        completeQuest("defeated_enemy");
+        changeViewer("donut", 8, "adorable violence");
+      }
+    }
+
+    function enemyTurn() {
+      const enemy = state.entities.goblin;
+      if (!enemy || enemy.hp <= 0) return;
+      const targets = [state.entities.carl, state.entities.donut].filter(t => t.hp > 0 && near(enemy, t, 1));
+      if (!targets.length) return;
+      const target = targets.sort((a, b) => a.hp - b.hp)[0];
+      const dmg = Math.max(0, 2 - target.armor);
+      target.hp = Math.max(0, target.hp - dmg);
+      system(`${enemy.name} claws ${target.name} for ${dmg} damage.`);
+    }
+
+    function pickup() {
+      const carl = state.entities.carl;
+      const obj = state.objects.find(o => o.type === "pickup" && !o.picked && o.x === carl.x && o.y === carl.y);
+      if (!obj) return system("There is nothing here to pick up. Carl briefly considers picking up his dignity."), true;
+      obj.picked = true;
+      carl.inventory.push(obj.item);
+      system(`Picked up ${state.items[obj.item].name}. The System refuses to call this fashion.`);
+      completeQuest("picked_up_item");
+      return true;
+    }
+
+    function equip() {
+      const carl = state.entities.carl;
+      const equipped = new Set(Object.values(carl.equipment));
+      const itemId = carl.inventory.find(id => !equipped.has(id) && ["torso", "legs", "weapon"].includes(state.items[id].slot));
+      if (!itemId) return system("No unequipped gear available. This remains a wardrobe emergency."), true;
+      const item = state.items[itemId];
+      carl.equipment[item.slot] = itemId;
+      recalcArmor();
+      if (item.slot === "legs") carl.debuffs = carl.debuffs.filter(d => d !== "no_pants");
+      system(`Equipped ${item.name}. The System grudgingly acknowledges progress.`);
+      return true;
+    }
+
+    function recalcArmor() {
+      const carl = state.entities.carl;
+      carl.armor = Object.values(carl.equipment).reduce((sum, id) => sum + (state.items[id].armor || 0), 0);
+    }
+
+    function buy() {
+      const carl = state.entities.carl;
+      const shop = state.objects.find(o => o.type === "shop" && Math.abs(o.x - carl.x) <= 1 && Math.abs(o.y - carl.y) <= 1);
+      if (!shop) return system("No shop is close enough to overcharge you."), true;
+      const item = shop.stock[0];
+      carl.inventory.push(item);
+      system(`Bought ${state.items[item].name}. Capitalism has survived the apocalypse.`);
+      return true;
+    }
+
+    function companionMode(mode) {
+      state.entities.donut.mode = mode;
+      system(`Donut mode set to ${mode}. Donut has filed a verbal objection.`);
+      return true;
+    }
+
+    function saveGame() {
+      state.checkpoint = JSON.parse(JSON.stringify({
+        entities: state.entities, objects: state.objects, quests: state.quests, viewer: state.viewer, timer: state.timer, turn: state.turn
+      }));
+      localStorage.setItem("dcc-browser-save", JSON.stringify(state.checkpoint));
+      system("Game saved. The System promises nothing about emotional safety.");
+      return true;
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem("dcc-browser-save");
+      if (!raw) return system("No save file exists yet. Bold strategy."), true;
+      restore(JSON.parse(raw));
+      system("Game loaded. Previous mistakes are now current mistakes.");
+      return true;
+    }
+
+    function restoreCheckpoint() {
+      if (!state.checkpoint) return system("No checkpoint exists yet. The System enjoys your optimism."), true;
+      restore(state.checkpoint);
+      system("Checkpoint restored. Reality has been politely rewound.");
+      return true;
+    }
+
+    function restore(data) {
+      state.entities = JSON.parse(JSON.stringify(data.entities));
+      state.objects = JSON.parse(JSON.stringify(data.objects));
+      state.quests = JSON.parse(JSON.stringify(data.quests));
+      state.viewer = JSON.parse(JSON.stringify(data.viewer));
+      state.timer = data.timer;
+      state.turn = data.turn;
+    }
+
+    function quit() {
+      system("Run ended. The viewers have filed a complaint about the lack of screaming.");
+      return false;
+    }
+
+    function runAction(action, shouldAdvance = true) {
+      state.lastMoved = false;
+      state.lastHitEnemy = null;
+      action = action.trim().toLowerCase();
+      let acted = false;
+      if (["w","a","s","d"].includes(action)) {
+        const dirs = { w: [0,-1], a: [-1,0], s: [0,1], d: [1,0] };
+        acted = move(...dirs[action]);
+      } else if (action === "t") acted = talk();
+      else if (action === "o") acted = openNearby();
+      else if (action === "i") acted = inventory();
+      else if (action === "c") acted = craft();
+      else if (action === "x") acted = attack(false);
+      else if (action === "u") acted = attack(true);
+      else if (action === "p") acted = pickup();
+      else if (action === "e") acted = equip();
+      else if (action === "b") acted = buy();
+      else if (action === "f") acted = companionMode("follow");
+      else if (action === "h") acted = companionMode("hide");
+      else if (action === "r") acted = companionMode("retreat");
+      else if (action === "v") acted = saveGame();
+      else if (action === "l") acted = loadGame();
+      else if (action === "k") acted = restoreCheckpoint();
+      else if (action === "q") acted = quit();
+      else system("Invalid command. The System has added this to your permanent record.");
+
+      if (acted && shouldAdvance && action !== "q") advanceTurn();
+      render();
+    }
+
+    function clickCell(x, y) {
+      const e = entityAt(x, y);
+      const o = objectAt(x, y);
+      if (e && e.type === "monster") return runAction(near(state.entities.carl, e, 1) ? "x" : "u");
+      if (e && e.type === "npc") return runAction("t");
+      if (o && o.type === "chest") return runAction("o");
+      if (o && o.type === "pickup") {
+        if (state.entities.carl.x === x && state.entities.carl.y === y) return runAction("p");
+        return stepToward(x, y);
+      }
+      if (o && o.type === "shop") return runAction("b");
+      return stepToward(x, y);
+    }
+
+    function stepToward(x, y) {
+      const carl = state.entities.carl;
+      const dx = x === carl.x ? 0 : Math.sign(x - carl.x);
+      const dy = y === carl.y ? 0 : Math.sign(y - carl.y);
+      if (Math.abs(x - carl.x) > Math.abs(y - carl.y) && dx) runAction(dx > 0 ? "d" : "a");
+      else if (dy) runAction(dy > 0 ? "s" : "w");
+      else if (dx) runAction(dx > 0 ? "d" : "a");
+    }
+
+    function hpColor(pct) {
+      if (pct > .55) return "linear-gradient(90deg, #45d483, #9ee85c)";
+      if (pct > .25) return "linear-gradient(90deg, #e5c94b, #e8a030)";
+      return "linear-gradient(90deg, #e84040, #ff7a62)";
+    }
+
+    function render() {
+      renderGrid();
+      renderCharacters();
+      renderInventory();
+      renderQuests();
+      renderViewers();
+      renderTimers();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("dungeonGrid");
+      grid.innerHTML = "";
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          let symbol = tileAt(x, y);
+          let cls = "";
+          if (symbol === "#") cls = "wall";
+          if (symbol === "=") cls = "desk";
+
+          const hz = hazardAt(x, y);
+          if (hz) { symbol = hz.symbol; cls = hz.effect === "trap" ? "trap" : hz.effect === "rough" ? "rough" : "hazard"; }
+          const obj = objectAt(x, y);
+          if (obj) {
+            symbol = obj.symbol;
+            cls = obj.type === "chest" ? "chest" : obj.type === "shop" ? "shop" : obj.item === "stale_healing_bar" ? "potion" : "pickup";
+          }
+          const ent = entityAt(x, y);
+          if (ent) {
+            symbol = ent.id === "donut" ? "🐱" : ent.symbol;
+            cls = ent.type === "player" ? "player" : ent.type === "companion" ? "donut-cell" : ent.type === "monster" ? "enemy" : ent.id === "bopca" ? "merchant" : "npc";
+            if (ent.type === "player" && state.lastMoved) cls += " moved";
+            if (ent.id === state.lastHitEnemy) cls += " hit";
+          }
+          cell.className += " " + cls;
+          cell.textContent = symbol === "." ? "" : symbol;
+          if (ent && ent.type === "monster") {
+            const hp = document.createElement("div");
+            hp.className = "cell-hp";
+            hp.innerHTML = `<span style="width:${(ent.hp / ent.maxHp) * 100}%"></span>`;
+            cell.appendChild(hp);
+          }
+          cell.addEventListener("click", () => clickCell(x, y));
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function renderCharacters() {
+      const carl = state.entities.carl, donut = state.entities.donut;
+      document.getElementById("carlLevel").textContent = `LVL ${carl.level}`;
+      document.getElementById("carlHpText").textContent = `${carl.hp}/${carl.maxHp}`;
+      const cp = carl.hp / carl.maxHp;
+      document.getElementById("carlHp").style.width = `${cp * 100}%`;
+      document.getElementById("carlHp").style.background = hpColor(cp);
+      document.getElementById("carlArmor").textContent = carl.armor;
+      document.getElementById("carlGear").textContent = Object.values(carl.equipment).map(id => state.items[id].name.replace("Carl's ", "")).join(", ") || "None";
+      document.getElementById("carlBadges").innerHTML = carl.debuffs.map(d => `<span class="badge danger">${d.replace("_", " ")}</span>`).join("") + `<span class="badge amber">XP ${carl.xp}</span>`;
+
+      document.getElementById("donutLevel").textContent = `LVL ${donut.level}`;
+      document.getElementById("donutHpText").textContent = `${donut.hp}/${donut.maxHp}`;
+      const dp = donut.hp / donut.maxHp;
+      document.getElementById("donutHp").style.width = `${dp * 100}%`;
+      document.getElementById("donutHp").style.background = hpColor(dp);
+      document.getElementById("donutMode").textContent = donut.mode;
+    }
+
+    function renderInventory() {
+      const counts = {};
+      for (const id of state.entities.carl.inventory) counts[id] = (counts[id] || 0) + 1;
+      document.getElementById("inventoryList").innerHTML = Object.entries(counts).map(([id, n]) => {
+        const item = state.items[id];
+        const equipped = Object.values(state.entities.carl.equipment).includes(id);
+        return `<div class="item-line"><span>${item.name}${n > 1 ? " x" + n : ""}</span><span>${equipped ? "equipped" : item.slot}</span></div>`;
+      }).join("") || `<div class="item-line"><span>Empty</span><span>sad</span></div>`;
+    }
+
+    function renderQuests() {
+      document.getElementById("questList").innerHTML = state.quests.map(quest => `
+        <div class="quest-card ${quest.complete ? "done" : ""}">
+          <div class="quest-check"></div>
+          <div><div class="quest-name">${quest.name}</div><div class="quest-desc">${quest.desc} ${quest.current}/${quest.target}</div></div>
+        </div>`).join("");
+    }
+
+    function renderViewers() {
+      for (const key of ["party", "carl", "donut"]) {
+        document.getElementById(`${key}ViewerText`).textContent = state.viewer[key];
+        document.getElementById(`${key}Viewer`).style.width = `${Math.min(100, state.viewer[key] * 10)}%`;
+      }
+    }
+
+    function renderTimers() {
+      const pct = state.timer / maxTimer;
+      document.getElementById("timerNumber").textContent = state.timer;
+      document.getElementById("turnCount").textContent = `Turn ${state.turn}`;
+      document.getElementById("floorFill").style.width = `${pct * 100}%`;
+      const timer = document.getElementById("timerNumber");
+      timer.className = "timer-number" + (pct <= .25 ? " danger" : pct <= .55 ? " warning" : "");
+    }
+
+    function renderSystem() {
+      document.getElementById("systemLog").innerHTML = state.systemLog.map((line, idx, arr) => `<div class="sys-line ${idx === arr.length - 1 ? "new" : ""}">${line}</div>`).join("");
+    }
+
+    function showBanner(text) {
+      const banner = document.getElementById("questBanner");
+      banner.textContent = text;
+      banner.classList.remove("show");
+      void banner.offsetWidth;
+      banner.classList.add("show");
+    }
+
+    document.getElementById("commandInput").addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        const input = event.currentTarget;
+        runAction(input.value);
+        input.value = "";
+      }
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.target.id === "commandInput" && event.key !== "Escape") return;
+      const key = event.key.toLowerCase();
+      if ("wasdxtouicepbfhrvlkq".includes(key) && key.length === 1) {
+        event.preventDefault();
+        runAction(key);
+      }
+    });
+
+    document.getElementById("controlsLine").innerHTML = controls.map(c => `<span class="control-pill">${c}</span>`).join("");
+    system("Welcome, Carl. You have been registered while aggressively failing to wear complete clothing.");
+    render();
+  </script>
+</body>
+</html>

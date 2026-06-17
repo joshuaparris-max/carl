@@ -1,0 +1,1615 @@
+
+Claude finished the response
+
+Here is a complete, playable text-and-grid prototype of the Dungeon Crawler Carl Tutorial Guild that you can copy, paste, and run immediately. It is built in pure Python (no external libraries needed) so you can "vibe code" it into a visual engine later. It meticulously respects the lore: Carl star
+
+pasted
+
+make this into an accurate as possible plan for building this complete video game that is as 100 percent accurate to books as possible
+
+9:13 PM
+Here's a comprehensive, lore-accurate game design document. I'll build it as an interactive plan you can work through phase by phase.
+
+
+
+Here's the complete plan, organized into six interactive sections you can explore.
+
+A few things worth calling out that most adaptations of this series get wrong:
+
+Donut is not a pet. She is a co-protagonist with a completely separate stat sheet, separate class evolution, and separate social reputation that often exceeds Carl's. The game has to treat her that way mechanically — not as a companion that follows Carl around being cute.
+
+The System has a voice. Every notification, achievement unlock, and death announcement needs to be written in that specific sarcastic, game-show-host tone from the books. It is one of the most distinctive elements of the series and the easiest thing to lose in a game adaptation.
+
+The "No Pants" debuff is load-bearing plot. It is not a joke to be resolved in the first five minutes — Carl's lack of gear is his entire starting condition and it should impose real, named mechanical penalties that the player feels.
+
+Carl's identity is explosions, not combat. If the game gives him a sword and makes him a generic brawler, it has missed the character entirely. The crafting system for improvised explosives needs to be prominent and discoverable, not buried in a menu.
+
+Click any of the buttons inside the plan to go deeper on a specific phase, system, or character — or just tell me which part you want to start building first.
+
+write a prompt for codex to make the ui way better, not just in python terminal, but like an actual beautiful game that could run in a web browser
+
+=== DUNGEON CRAWLER CARL: TUTORIAL GUILD ===
+Controls: W/A/S/D move | X attack | U use | T talk | O open | I inventory | C craft | E equip | P pickup | B buy | F/H/R Donut | V/L/K save/load/checkpoint | Q quit
+# # # # # # # # # # # #
+# . . . . . . . . . . #
+# . . . . . . ? . . . #
+# . . . . . . . . . . #
+# . . . . . M . . . . #
+# . . . = = = = . . . #
+# . . . . . . . . B . #
+# . p . . . . . . $ . #
+# . . . ~ ^ ! . g . . #
+# D . C . . . . . . . #
+# . . . . . . . . . . #
+# # # # # # # # # # # #
+==============================================================
+Carl | Level 1 | HP 12/12 | Armor 1 | Gear: Carl's Leather Jacket | Debuffs: no_pants
+Donut | Level 0 | HP 5/5 | Title: Grand Champion | Mode: follow
+Timer: 100 turns
+Viewer pressure: party 0 | Carl 0 | Donut 4
+Enemies: Training Goblin HP 6/6
+Quests: [open] Listen Before Dying - Talk to Mordecai and learn the first survival rules. (0/1) | [open] Inventory Check - Confirm Carl's jacket is real gear and the lack of pants is real trouble. (0/1) | [open] Questionable Gift - Open the tutorial chest and recover the first explosive crafting material. (0/1) | [open] Carl Makes A Problem - Craft the first crude explosive from dungeon materials. (0/1) | [open] First Blood - Defeat the tutorial enemy without pretending this is normal. (0/1) | [open] Dress Code Violation - Find something, anything, that counts as pants. (0/1) | [open] Bad Flooring - Learn that terrain can hate you too. (0/1)
+==============================================================
+SYSTEM: Welcome, Carl. You have been registered while aggressively failing to wear complete clothing.
+Action:
+
+Show more
+9:34 PM
+Here's a prompt you can paste directly into Codex:
+
+PROMPT FOR CODEX:
+
+Convert the Python terminal Dungeon Crawler Carl game into a beautiful, fully playable browser game using HTML, CSS, and vanilla JavaScript in a single self-contained index.html file. No frameworks, no build steps, no external dependencies except Google Fonts.
+
+VISUAL DESIGN REQUIREMENTS:
+
+The game must look like a premium indie roguelite — dark fantasy aesthetic with amber/orange accent colors, NOT a terminal emulator. Think Hades meets a dungeon crawler UI. Specifically:
+
+- Background: deep near-black (#0d0d0f) with subtle noise texture via CSS
+- Primary accent: warm amber (#e8a030) for the System announcements and highlights  
+- Secondary accent: cool teal (#2ecfaa) for Donut-related UI elements
+- Danger red (#e84040) for enemy HP and debuffs
+- All text in a monospace font (import "JetBrains Mono" from Google Fonts) for the grid, "Inter" for UI panels
+- The entire game fits in a single viewport with no scrolling — responsive to 1280×720 minimum
+
+LAYOUT (CSS Grid, three columns):
+
+LEFT PANEL (220px wide):
+- Character portrait area at top: Carl rendered as ASCII art in a styled box with amber border, showing his leather jacket and explicitly "no pants" — make it funny
+- Below it: Princess Donut portrait in teal-bordered box
+- HP bars rendered as actual styled progress bars with color gradients (green→yellow→red based on %)
+- Debuff badges: pill-shaped tags, "NO PANTS" in red, styled like a warning label
+- Level and XP display
+
+CENTER PANEL (flex-grow):
+- The dungeon grid rendered as an HTML table or CSS grid — NOT pre/code tags
+- Each cell is a styled div/td with hover effects
+- Tile styling: walls (#) are dark stone texture via CSS pattern, floor (.) is very subtle dark, special tiles get icons:
+  - M (Mordecai): glowing amber NPC indicator
+  - C (Carl): blue-white player indicator with subtle pulse animation
+  - D (Donut): teal indicator with a cat emoji or ASCII cat  
+  - = (desk): warm brown desk color
+  - g (goblin): red enemy indicator with HP bar underneath the cell
+  - ? (chest): golden treasure glow with CSS animation
+  - $ (coins): yellow shimmer
+  - B (shop): purple merchant indicator
+  - ~ (water/hazard): animated blue shimmer via CSS keyframes
+  - ^ (trap): red spike indicator
+  - ! (item): white glow
+  - p (potion): green glow
+- Turn counter displayed as a dramatic countdown timer above the grid with color shift: green→yellow→red as turns deplete
+
+RIGHT PANEL (260px wide):
+- System announcements box at top — styled like an alien broadcast terminal, amber text on very dark background, with a blinking cursor, scrollable, last 5 messages shown, newest at bottom
+- Quest log below — each quest as a styled card with checkbox, quest name bold, description smaller, completion state visually distinct (strikethrough + muted when done)
+- Viewer pressure meter: three labeled bars (Party / Carl / Donut) with styled progress indicators
+
+BOTTOM BAR (full width):
+- Input field for actions styled as a terminal command line with ">" prompt, amber cursor
+- Controls reference as small pill badges in a flex row above the input
+- Floor timer shown as a dramatic progress bar that slowly depletes
+
+INTERACTIVITY:
+- Keep all existing Python game logic but rewrite it in JavaScript
+- Keyboard shortcuts all work exactly as before (W/A/S/D, X, U, T, etc.)
+- When Carl moves, animate his cell indicator with a brief CSS transition
+- When the System posts a message, it slides in from the right with a brief animation
+- When an enemy takes damage, flash its cell red briefly
+- When a quest completes, show a brief amber banner notification at the top center that fades out after 2 seconds ("QUEST COMPLETE — [name]")
+- Clicking a cell talks to/attacks/interacts with whatever is in it (detect entity and run appropriate action)
+
+GAME LOGIC TO PORT (preserve 100% of this behavior):
+- Carl starts at position (2,9), Donut at (1,9) following one step behind
+- Mordecai at (6,4) behind the desk triggers 3-cycle dialogue on proximity
+- Full quest tracking system with all 7 starting quests
+- Debuff system ("no_pants" armor penalty)
+- Viewer pressure tracking (party/Carl/Donut separate values)
+- Turn countdown timer
+- All entity stats (HP, level, armor, gear slots)
+- Inventory system
+- Crafting system placeholder
+- The System's sarcastic announcement voice — all messages must maintain the dark-comedic tone from the books
+
+SYSTEM MESSAGE TONE (use this for all generated System messages):
+The System speaks like a deranged alien game-show host who finds human suffering entertaining. It is sarcastic, specific, and occasionally almost sympathetic. Examples: "Achievement unlocked: Still Alive. Reward: Continued misery." — "Crawler 4411 has located the floor. The floor remains unimpressed." — "NOTICE: Pants have not been located. The System is deeply unsurprised."
+
+STARTING STATE to render immediately on load:
+- Grid exactly as shown in the current terminal output
+- All quests shown as open
+- Donut viewer pressure: 4, Carl: 0, Party: 0
+- Timer: 100 turns
+- Carl stats: Level 1, HP 12/12, Armor 1, Leather Jacket equipped, no_pants debuff active
+- Donut stats: Level 0, HP 5/5, Grand Champion title, follow mode
+- First System message: "Welcome, Carl. You have been registered while aggressively failing to wear complete clothing."
+
+Deliver this as a single index.html file. All CSS in a <style> block in the head. All JavaScript in a <script> block before </body>. No external files. Must run by simply opening index.html in any modern browser.
+A few notes on using this with Codex:
+
+If the output hits the token limit mid-file, follow up with: "continue from where you left off — paste the remainder of the JavaScript game logic."
+
+If the grid rendering looks off, follow up with: "the grid cells need to be square — add aspect-ratio: 1 to the tile CSS and recalculate the center panel width."
+
+If you want to go even further after the initial output, the natural next prompt is to ask Codex to add the crafting UI as a modal overlay, since that's the most visually interesting system and it's currently just a placeholder.
+
+how do we take this game to the next level, our aim in a triple A indie quality level game
+
+## What’s Done So Far
+### Core Architecture
+- crawler.py launches the game by creating src.game.Game and calling run().
+- game.py defines the main loop:
+  - loads data
+  - constructs GameWorld, GameState, QuestLog, EventQueue, ActionProcessor, TurnManager, TerminalUI
+  - reads player input, processes a turn, collects event messages, renders output
+### Data-Driven Content
+- Uses JSON assets in data for:
+  - characters
+  - items
+  - dialogue
+  - announcements
+  - quests
+  - recipes
+  - objects
+  - hazards
+- Map layout loaded from tutorial_guild_map.txt
+### Gameplay Systems Implemented
+- Movement with blocking and companion follow
+- Talk action for nearby NPCs
+- Open action for chests
+- Inventory viewing
+- Crafting from recipe materials
+- Attack and item-use combat
+- Equip and pickup actions
+- Shop purchase action
+- Companion mode commands (f, h, r)
+- Save / load / checkpoint restore
+- Quit command
+### World & State Management
+- world.py handles entity positions, map rendering, objects, hazards
+- game_state.py tracks:
+  - inventory, equipment, armor
+  - dialogue progress
+  - floor timer
+  - viewer pressure
+  - checkpoint state
+- events.py queues game events/messages
+### Quest & Feedback System
+- quests.py tracks quest objectives and completion
+- Quest progress is driven by event recording
+- terminal.py renders:
+  - map
+  - player/companion status
+  - timer
+  - viewer pressure
+  - active quest lines
+  - last event message(s)
+### Combat & Enemy Behavior
+- combat.py resolves attacks, hit/miss, damage, armor
+- Consumable explosives can be used in combat
+- Companion Donut supports combat and can act differently based on mode
+- Enemies take turns and can attack the party
+### Save / Checkpoint Support
+- save_system.py saves to and loads from savegame.json
+- Checkpoint system in GameState can snapshot and restore current run state
+### Recent Improvements
+- Quest completion messages now fire immediately when objectives finish
+- Fixed duplicate player_moved quest recording in movement handling
+- Added quest-completion event pushes for:
+  - inventory inspection
+  - chest opening
+  - crafting
+  - talking to Mordecai
+  - hazard triggering
+  - defeating enemies
+  - item pickup
+### Validation
+- The codebase has unit/integration tests under tests
+- Running unittest discover tests currently passes
+### Current Playtest State
+- The app is a playable terminal prototype with a tutorial loop:
+  - move around
+  - open the tutorial chest
+  - inspect inventory
+  - craft the first explosive
+  - talk to Mordecai
+  - fight enemies
+  - see quest status and event messages
+If you want, I can next summarize what is still missing vs. a minimal playable demo.
+
+Show more
+9:36 PM
+Q: What's your primary target platform?
+A: Both — web first, then package as desktop
+
+Q: What's your team situation?
+A: Solo dev
+
+Q: Which AAA-indie quality pillar matters most to you right now?
+A: all of those
+
+9:37 PM
+Good answers. Here's the honest picture for a solo dev aiming at all four pillars simultaneously — then a concrete plan that makes it actually achievable.
+
+
+
+The interactive roadmap above has everything broken down across six tabs. A few things worth emphasising beyond what's in there:
+
+The biggest mistake solo devs make is trying to build all four pillars in parallel. You end up with mediocre art, mediocre feel, mediocre content, and mediocre polish simultaneously — which reads as low quality across the board. The sequence in the last tab is designed so that every two-week block produces something you can actually show someone.
+
+Your Python codebase is genuinely good. The fact that your logic is data-driven (JSON files for everything), your systems are separated, and your tests pass means the port to JavaScript is a translation exercise, not a rewrite. Every dict becomes an object literal, every list becomes an array, every for item in items becomes a for...of. Your combat.py logic becomes combat.js in an afternoon.
+
+Phaser 3 is the right engine specifically because it keeps you in JavaScript — same language as your web target, same language Codex knows deeply, same language Electron uses to package for desktop. You never leave the ecosystem.
+
+The juice pass in weeks 3–4 is the secret weapon. If you show someone the game after week 2 (working but placeholder), they'll say "interesting." If you show them after week 4 (same content, but with screen shake, sound, and smooth tweens), they'll say "this is actually good." Same game. The feeling changed.
+
+Click any of the "↗" buttons to go directly into building that piece.
+
+
+Dungeon Crawler Carl.zip
+zip
+
+can you upgrade it, i notice that part of the map is hidden behind text, we need a way to zoom in and out the map please
+
+9:54 PM
+Let me read the skill files first, then dig into the uploaded code.
+
+
+Viewed 2 files, ran 2 commands
+Viewed 2 files, ran 2 commands
+Now I have a complete picture of the code. Let me build the upgraded version with zoom controls and a fixed layout so the map is never obscured.
+
+
+Read the map file and key data files
+Read the map file and key data files
+Good, I have everything I need. Now building the upgraded index.html with:
+
+Zoom in/out controls (mouse wheel + buttons)
+Layout that prevents UI panels from ever covering the map
+Better responsive grid sizing
+
+Ran 2 commands
+Ran 2 commands
+
+Check file size
+
+Script
+
+Create the upgraded index.html with zoom controls and fixed layout
+bash
+
+cat > "/home/claude/dcc/Dungeon Crawler Carl/index.html" << 'HTMLEOF'
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dungeon Crawler Carl - Tutorial Guild</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --panel: #151417;
+      --panel-2: #1c1917;
+      --line: rgba(232,160,48,.22);
+      --amber: #e8a030;
+      --amber-soft: rgba(232,160,48,.16);
+      --teal: #2ecfaa;
+      --red: #e84040;
+      --green: #45d483;
+      --yellow: #e5c94b;
+      --purple: #b979ff;
+      --text: #f6ead6;
+      --muted: #9c9284;
+      --stone: #242226;
+      --floor: #121215;
+      --blue-white: #cfe8ff;
+      --zoom: 1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+
+    body {
+      background:
+        radial-gradient(circle at 38% 0%, rgba(232,160,48,.07), transparent 34%),
+        radial-gradient(circle at 88% 78%, rgba(46,207,170,.05), transparent 30%),
+        linear-gradient(135deg, rgba(255,255,255,.018) 25%, transparent 25%) 0 0 / 4px 4px,
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+    }
+
+    /* ── TOP-LEVEL SHELL ───────────────────────────────────────── */
+    .game-shell {
+      height: 100vh;
+      display: grid;
+      /* LEFT | CENTER | RIGHT — center never shrinks below its content */
+      grid-template-columns: 210px 1fr 252px;
+      grid-template-rows: 1fr 110px;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .panel {
+      min-height: 0;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.032), rgba(255,255,255,.010)), var(--panel);
+      box-shadow: 0 20px 60px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.045);
+      overflow: hidden;
+    }
+
+    /* ── LEFT PANEL ────────────────────────────────────────────── */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding: 10px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .left-panel::-webkit-scrollbar { display: none; }
+
+    .portrait {
+      border: 1px solid var(--amber);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(232,160,48,.13), rgba(0,0,0,.1));
+      padding: 10px;
+      flex-shrink: 0;
+    }
+    .portrait.donut { border-color: var(--teal); background: linear-gradient(180deg, rgba(46,207,170,.11), rgba(0,0,0,.08)); }
+
+    .portrait-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--amber);
+      font-weight: 800;
+    }
+    .donut .portrait-title { color: var(--teal); }
+
+    .ascii {
+      height: 68px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(0,0,0,.22);
+      color: #ffe1a0;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      white-space: pre;
+      text-align: center;
+      line-height: 1.06;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .donut .ascii { color: #b9fff0; }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin: 5px 0;
+    }
+    .bar {
+      height: 9px;
+      border-radius: 999px;
+      background: #070708;
+      border: 1px solid rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      transition: width .22s ease, background .22s ease;
+    }
+    .badge-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+    .badge {
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.1);
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+      text-transform: uppercase;
+    }
+    .badge.danger { color: #fff0f0; background: rgba(232,64,64,.2); border-color: rgba(232,64,64,.5); }
+    .badge.teal   { color: #d9fff7; background: rgba(46,207,170,.12); border-color: rgba(46,207,170,.42); }
+    .badge.amber  { color: #ffe6ae; background: rgba(232,160,48,.14); border-color: rgba(232,160,48,.42); }
+
+    .mini-panel {
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 11px;
+      background: rgba(0,0,0,.15);
+      padding: 9px;
+      flex-shrink: 0;
+    }
+    .mini-title {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 7px;
+    }
+    .inventory-list { display: grid; gap: 5px; font-size: 10px; color: var(--muted); }
+    .item-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      border-bottom: 1px solid rgba(255,255,255,.045);
+      padding-bottom: 4px;
+    }
+
+    /* ── CENTER PANEL ──────────────────────────────────────────── */
+    .center-panel {
+      display: grid;
+      grid-template-rows: 58px minmax(0, 1fr);
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .timer-card {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(232,160,48,.16);
+      background: linear-gradient(90deg, rgba(232,160,48,.09), rgba(232,64,64,.03));
+      flex-shrink: 0;
+    }
+    .timer-label { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: .09em; font-weight: 800; }
+    .timer-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .timer-number {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 28px;
+      text-align: right;
+      font-weight: 800;
+      color: var(--green);
+    }
+    .timer-number.warning { color: var(--yellow); }
+    .timer-number.danger  { color: var(--red); }
+
+    /* ── MAP VIEWPORT ──────────────────────────────────────────── */
+    .map-viewport {
+      position: relative;
+      border-radius: 12px;
+      background: radial-gradient(circle at center, rgba(232,160,48,.045), transparent 60%), rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.055);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Zoom controls — top-right of map */
+    .zoom-controls {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+      background: rgba(10,8,6,.72);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      backdrop-filter: blur(6px);
+    }
+    .zoom-btn {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(232,160,48,.35);
+      background: rgba(232,160,48,.1);
+      color: var(--amber);
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      transition: background .12s;
+      user-select: none;
+    }
+    .zoom-btn:hover { background: rgba(232,160,48,.22); }
+    .zoom-btn:active { transform: scale(.92); }
+    .zoom-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--amber);
+      min-width: 34px;
+      text-align: center;
+    }
+
+    /* Scrollable map container inside the viewport */
+    .map-scroll {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232,160,48,.25) transparent;
+    }
+    .map-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
+    .map-scroll::-webkit-scrollbar-thumb { background: rgba(232,160,48,.22); border-radius: 3px; }
+
+    /* The actual grid — zoom applied here via transform */
+    .dungeon-grid {
+      display: grid;
+      grid-template-columns: repeat(12, var(--cell-size, 46px));
+      grid-template-rows: repeat(12, var(--cell-size, 46px));
+      gap: 3px;
+      flex-shrink: 0;
+      transform-origin: center center;
+    }
+
+    .cell {
+      position: relative;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 800;
+      font-size: 18px;
+      color: rgba(255,255,255,.55);
+      background: var(--floor);
+      border: 1px solid rgba(255,255,255,.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.022);
+      transition: transform .12s ease, border-color .12s ease;
+      cursor: pointer;
+      user-select: none;
+      overflow: hidden;
+      /* cell size controlled by parent grid */
+    }
+    .cell:hover { transform: translateY(-1px); border-color: rgba(232,160,48,.32); }
+
+    .wall {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.038) 25%, transparent 25%) 0 0 / 6px 6px,
+        linear-gradient(45deg, rgba(0,0,0,.26), transparent),
+        var(--stone);
+      color: #52504f;
+      border-color: rgba(0,0,0,.38);
+      box-shadow: inset 0 0 14px rgba(0,0,0,.42);
+    }
+    .desk { background: linear-gradient(180deg, #5c3518, #351d0d); color: #d59a52; border-color: rgba(232,160,48,.22); }
+    .npc  { color: var(--amber); box-shadow: 0 0 18px rgba(232,160,48,.2), inset 0 0 10px rgba(232,160,48,.07); }
+    .merchant { color: var(--purple); box-shadow: 0 0 16px rgba(185,121,255,.2); }
+    .player { color: var(--blue-white); animation: pulsePlayer 1.6s infinite; background: radial-gradient(circle, rgba(207,232,255,.18), var(--floor) 62%); }
+    .player.moved { animation: movePop .2s ease, pulsePlayer 1.6s infinite; }
+    .donut-cell { color: var(--teal); background: radial-gradient(circle, rgba(46,207,170,.16), var(--floor) 62%); box-shadow: 0 0 16px rgba(46,207,170,.2); }
+    .enemy { color: #ffb1b1; background: radial-gradient(circle, rgba(232,64,64,.18), #170d0d 70%); box-shadow: 0 0 16px rgba(232,64,64,.2); }
+    .enemy.hit { animation: redFlash .32s ease; }
+    .chest { color: #ffd66c; background: radial-gradient(circle, rgba(232,160,48,.3), #211507 68%); animation: treasureGlow 1.3s infinite alternate; }
+    .shop { color: #ffe073; background: radial-gradient(circle, rgba(255,224,115,.22), #211807 70%); animation: shimmer 1.7s infinite; }
+    .hazard { color: #92d7ff; background: linear-gradient(120deg, rgba(36,132,170,.18), rgba(0,0,0,.16)); animation: waterShimmer 1.5s infinite linear; }
+    .trap { color: var(--red); background: radial-gradient(circle, rgba(232,64,64,.18), #1d0c0c 70%); }
+    .rough { color: #c8c6c6; background: linear-gradient(135deg, #1f1d1d, #141414); }
+    .pickup { color: #dcffe9; background: radial-gradient(circle, rgba(255,255,255,.16), #121416 70%); box-shadow: 0 0 14px rgba(255,255,255,.14); }
+    .potion { color: #8fffad; background: radial-gradient(circle, rgba(69,212,131,.2), #0d1c13 70%); }
+
+    .cell-hp {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      bottom: 3px;
+      height: 3px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.48);
+      overflow: hidden;
+    }
+    .cell-hp span { display: block; height: 100%; background: var(--red); transition: width .18s ease; }
+
+    /* ── RIGHT PANEL ───────────────────────────────────────────── */
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .system-box {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      background: #090909;
+      border: 1px solid rgba(232,160,48,.32);
+      border-radius: 11px;
+      padding: 9px;
+      box-shadow: inset 0 0 18px rgba(232,160,48,.04);
+      max-height: 180px;
+    }
+    .system-title {
+      color: var(--amber);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-weight: 800;
+      margin-bottom: 7px;
+    }
+    .system-log {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 6px;
+      overflow: hidden;
+      flex: 1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 10px;
+      line-height: 1.35;
+      color: #f2b85c;
+    }
+    .sys-line { opacity: .76; }
+    .sys-line.new { animation: slideIn .32s ease; opacity: 1; }
+    .cursor { color: var(--amber); animation: blink 1s steps(2,start) infinite; }
+
+    .quest-box {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 11px;
+      background: rgba(0,0,0,.14);
+      padding: 9px;
+    }
+    .quest-list {
+      overflow-y: auto;
+      display: grid;
+      gap: 6px;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(232,160,48,.18) transparent;
+    }
+    .quest-card {
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 9px;
+      background: rgba(0,0,0,.16);
+      padding: 6px 8px;
+      display: grid;
+      grid-template-columns: 15px 1fr;
+      gap: 6px;
+      align-items: start;
+      flex-shrink: 0;
+    }
+    .quest-check { width: 13px; height: 13px; border-radius: 4px; border: 1px solid rgba(232,160,48,.55); margin-top: 1px; }
+    .quest-card.done { opacity: .42; }
+    .quest-card.done .quest-check { background: var(--amber); }
+    .quest-card.done .quest-name { text-decoration: line-through; }
+    .quest-name { font-size: 10px; font-weight: 800; color: var(--text); }
+    .quest-desc { font-size: 9px; color: var(--muted); line-height: 1.3; margin-top: 1px; }
+
+    .viewer-box { flex: 0 0 auto; }
+    .viewer-row { margin-bottom: 7px; }
+    .viewer-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+    .viewer-fill { height: 100%; background: linear-gradient(90deg, var(--amber), #ffdb7b); transition: width .22s ease; }
+    .viewer-fill.teal { background: linear-gradient(90deg, var(--teal), #a4ffed); }
+
+    /* ── BOTTOM BAR ────────────────────────────────────────────── */
+    .bottom-bar {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 10px;
+      padding: 10px 12px;
+    }
+
+    .controls-line { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; }
+    .control-pill {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9px;
+      border-radius: 999px;
+      padding: 3px 7px;
+      border: 1px solid rgba(232,160,48,.28);
+      color: #f7cf88;
+      background: rgba(232,160,48,.07);
+    }
+    .command-row {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      align-items: center;
+      border: 1px solid rgba(232,160,48,.38);
+      border-radius: 11px;
+      background: rgba(0,0,0,.34);
+      padding: 8px 11px;
+      font-family: "JetBrains Mono", monospace;
+    }
+    .prompt { color: var(--amber); font-weight: 800; }
+    #commandInput {
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      caret-color: var(--amber);
+      width: 100%;
+      font-size: 13px;
+    }
+    .bottom-timer { display: grid; align-content: center; gap: 7px; }
+    .floor-bar { height: 16px; border-radius: 999px; background: #070707; border: 1px solid rgba(255,255,255,.07); overflow: hidden; }
+    .floor-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--yellow), var(--red)); transition: width .2s ease; }
+    .floor-caption { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+
+    /* ── BANNER ────────────────────────────────────────────────── */
+    .banner {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      border: 1px solid rgba(232,160,48,.58);
+      border-radius: 999px;
+      background: rgba(10,8,5,.94);
+      color: var(--amber);
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .08em;
+      padding: 9px 18px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.4), 0 0 28px rgba(232,160,48,.14);
+    }
+    .banner.show { animation: questBanner 2.2s ease forwards; }
+
+    /* ── ANIMATIONS ────────────────────────────────────────────── */
+    @keyframes pulsePlayer {
+      0%,100% { box-shadow: 0 0 10px rgba(207,232,255,.12); }
+      50%      { box-shadow: 0 0 22px rgba(207,232,255,.34); }
+    }
+    @keyframes movePop { 0% { transform: scale(.8); } 100% { transform: scale(1); } }
+    @keyframes redFlash { 0%,100%{filter:none} 35%{background:#ff2d2d;color:#fff} }
+    @keyframes treasureGlow {
+      from { box-shadow: 0 0 10px rgba(232,160,48,.16); }
+      to   { box-shadow: 0 0 26px rgba(232,160,48,.42); }
+    }
+    @keyframes shimmer { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.32)} }
+    @keyframes waterShimmer { from{background-position:0 0} to{background-position:40px 0} }
+    @keyframes blink { 50%{opacity:0} }
+    @keyframes slideIn { from{transform:translateX(28px);opacity:0} to{transform:translateX(0);opacity:1} }
+    @keyframes questBanner {
+      0%   { opacity:0; transform:translateX(-50%) translateY(-20px); }
+      12%, 80% { opacity:1; transform:translateX(-50%) translateY(0); }
+      100% { opacity:0; transform:translateX(-50%) translateY(-20px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner" id="questBanner"></div>
+  <main class="game-shell">
+
+    <!-- LEFT -->
+    <aside class="panel left-panel">
+      <section class="portrait">
+        <div class="portrait-title"><span>Carl</span><span id="carlLevel">LVL 1</span></div>
+        <div class="ascii">╔CARL╗
+╚╦J╦╝
+ / \ 
+NO PANTS</div>
+        <div class="stat-row"><span>HP</span><span id="carlHpText">12/12</span></div>
+        <div class="bar"><div class="bar-fill" id="carlHp"></div></div>
+        <div class="stat-row"><span>Armor</span><span id="carlArmor">1</span></div>
+        <div class="stat-row"><span>Gear</span><span id="carlGear">Leather Jacket</span></div>
+        <div class="badge-row" id="carlBadges"></div>
+      </section>
+
+      <section class="portrait donut">
+        <div class="portrait-title"><span>Princess Donut</span><span id="donutLevel">LVL 0</span></div>
+        <div class="ascii"> /\_/\
+( o.o )
+ > ♛ <
+GRAND CHAMP</div>
+        <div class="stat-row"><span>HP</span><span id="donutHpText">5/5</span></div>
+        <div class="bar"><div class="bar-fill" id="donutHp"></div></div>
+        <div class="stat-row"><span>Mode</span><span id="donutMode">follow</span></div>
+        <div class="badge-row"><span class="badge teal">Persian</span><span class="badge teal">Civilian</span></div>
+      </section>
+
+      <section class="mini-panel">
+        <div class="mini-title">Inventory</div>
+        <div class="inventory-list" id="inventoryList"></div>
+      </section>
+    </aside>
+
+    <!-- CENTER -->
+    <section class="panel center-panel">
+      <div class="timer-card">
+        <div>
+          <div class="timer-label">Floor Collapse Countdown</div>
+          <div class="timer-sub" id="turnCount">Turn 0 · Tutorial Guild</div>
+        </div>
+        <div class="timer-number" id="timerNumber">100</div>
+      </div>
+
+      <div class="map-viewport" id="mapViewport">
+        <!-- Zoom controls -->
+        <div class="zoom-controls" id="zoomControls">
+          <button class="zoom-btn" id="zoomOut" title="Zoom out (scroll down)">−</button>
+          <span class="zoom-label" id="zoomLabel">100%</span>
+          <button class="zoom-btn" id="zoomIn" title="Zoom in (scroll up)">+</button>
+        </div>
+        <!-- Scrollable inner -->
+        <div class="map-scroll" id="mapScroll">
+          <div class="dungeon-grid" id="dungeonGrid" aria-label="Dungeon map"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT -->
+    <aside class="panel right-panel">
+      <section class="system-box">
+        <div class="system-title">Alien Broadcast System <span class="cursor">▌</span></div>
+        <div class="system-log" id="systemLog"></div>
+      </section>
+
+      <section class="quest-box">
+        <div class="mini-title">Quest Log</div>
+        <div class="quest-list" id="questList"></div>
+      </section>
+
+      <section class="viewer-box mini-panel">
+        <div class="mini-title">Viewer Pressure</div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Party</span><span id="partyViewerText">0</span></div>
+          <div class="bar"><div class="viewer-fill" id="partyViewer" style="width:0%"></div></div>
+        </div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Carl</span><span id="carlViewerText">0</span></div>
+          <div class="bar"><div class="viewer-fill" id="carlViewer" style="width:0%"></div></div>
+        </div>
+        <div class="viewer-row">
+          <div class="viewer-label"><span>Donut</span><span id="donutViewerText">4</span></div>
+          <div class="bar"><div class="viewer-fill teal" id="donutViewer" style="width:40%"></div></div>
+        </div>
+      </section>
+    </aside>
+
+    <!-- BOTTOM -->
+    <footer class="panel bottom-bar">
+      <div>
+        <div class="controls-line" id="controlsLine"></div>
+        <div class="command-row">
+          <div class="prompt">&gt;</div>
+          <input id="commandInput" autocomplete="off" spellcheck="false"
+            aria-label="Action command" placeholder="Type a command or press a key…">
+        </div>
+      </div>
+      <div class="bottom-timer">
+        <div class="floor-caption">Floor timer integrity</div>
+        <div class="floor-bar"><div class="floor-fill" id="floorFill"></div></div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    /* ─── ZOOM ──────────────────────────────────────────────────── */
+    const ZOOM_STEPS = [40, 46, 54, 62, 72, 84, 96, 110];
+    const ZOOM_DEFAULT_IDX = 2; // 54px = ~comfortable default
+    let zoomIdx = ZOOM_DEFAULT_IDX;
+
+    function applyZoom() {
+      const sz = ZOOM_STEPS[zoomIdx];
+      const pct = Math.round((sz / ZOOM_STEPS[ZOOM_DEFAULT_IDX]) * 100);
+      const grid = document.getElementById("dungeonGrid");
+      grid.style.gridTemplateColumns = `repeat(12, ${sz}px)`;
+      grid.style.gridTemplateRows    = `repeat(12, ${sz}px)`;
+      // Scale font with cell
+      const fontSize = Math.max(10, Math.round(sz * 0.38));
+      grid.style.fontSize = fontSize + "px";
+      document.getElementById("zoomLabel").textContent = pct + "%";
+    }
+
+    document.getElementById("zoomIn").addEventListener("click", e => {
+      e.stopPropagation();
+      if (zoomIdx < ZOOM_STEPS.length - 1) { zoomIdx++; applyZoom(); }
+    });
+    document.getElementById("zoomOut").addEventListener("click", e => {
+      e.stopPropagation();
+      if (zoomIdx > 0) { zoomIdx--; applyZoom(); }
+    });
+
+    // Mouse-wheel zoom over the map
+    document.getElementById("mapViewport").addEventListener("wheel", e => {
+      e.preventDefault();
+      if (e.deltaY < 0 && zoomIdx < ZOOM_STEPS.length - 1) { zoomIdx++; applyZoom(); }
+      if (e.deltaY > 0 && zoomIdx > 0)                      { zoomIdx--; applyZoom(); }
+    }, { passive: false });
+
+    // Keyboard zoom — = for in, - for out
+    document.addEventListener("keydown", e => {
+      if (e.target.id === "commandInput") return;
+      if (e.key === "=" || e.key === "+") { if (zoomIdx < ZOOM_STEPS.length - 1) { zoomIdx++; applyZoom(); } }
+      if (e.key === "-" || e.key === "_") { if (zoomIdx > 0) { zoomIdx--; applyZoom(); } }
+    });
+
+    /* ─── CONSTANTS ─────────────────────────────────────────────── */
+    const maxTimer = 100;
+
+    const baseGrid = [
+      "############",
+      "#..........#",
+      "#......?...#",
+      "#..........#",
+      "#.....M....#",
+      "#...====...#",
+      "#.........B#",
+      "#.p!.......#",
+      "#....~^!.g.#",
+      "#DC........#",
+      "#..........#",
+      "############"
+    ].map(r => r.split(""));
+
+    /* ─── GAME STATE ────────────────────────────────────────────── */
+    const state = {
+      turn: 0, timer: 100,
+      systemLog: [], lastMoved: false, lastHitEnemy: null,
+      entities: {
+        carl: { id:"carl", name:"Carl", symbol:"C", x:2, y:9, level:1, xp:0, hp:12, maxHp:12,
+          armor:1, stats:{strength:5,dexterity:4,charisma:3},
+          inventory:["leather_jacket"], equipment:{torso:"leather_jacket"},
+          debuffs:["no_pants"], type:"player" },
+        donut: { id:"donut", name:"Princess Donut", symbol:"D", x:1, y:9, level:0, xp:0, hp:5, maxHp:5,
+          armor:0, stats:{strength:1,dexterity:7,charisma:9},
+          inventory:[], equipment:{}, debuffs:["civilian"],
+          mode:"follow", title:"Grand Champion", type:"companion" },
+        mordecai: { id:"mordecai", name:"Mordecai", symbol:"M", x:6, y:4, hp:20, maxHp:20, armor:0, type:"npc" },
+        bopca:    { id:"bopca",    name:"Bopca Clerk", symbol:"B", x:10, y:6, hp:10, maxHp:10, armor:0, type:"npc" },
+        goblin:   { id:"goblin",   name:"Training Goblin", symbol:"g", x:9, y:8, hp:6, maxHp:6, armor:0, type:"monster" }
+      },
+      objects: [
+        { id:"chest",  name:"Tutorial Chest",            symbol:"?", x:7,  y:2, type:"chest",  opened:false, contains:["unstable_powder"] },
+        { id:"pants",  name:"Threadbare Pants",          symbol:"!", x:3,  y:7, type:"pickup", picked:false, item:"threadbare_pants" },
+        { id:"potion", name:"Stale Healing Bar",         symbol:"p", x:2,  y:7, type:"pickup", picked:false, item:"stale_healing_bar" },
+        { id:"item2",  name:"Dungeon Scrap",             symbol:"!", x:6,  y:8, type:"pickup", picked:false, item:"stale_healing_bar" },
+        { id:"shop",   name:"Overpriced Tutorial Kiosk", symbol:"$", x:10, y:7, type:"shop",   stock:["stale_healing_bar"] }
+      ],
+      hazards: [
+        { id:"grime", name:"Suspicious Grime Patch", symbol:"~", x:5, y:8, effect:"filth",  severity:0 },
+        { id:"rough", name:"Rough Tile",             symbol:"^", x:6, y:8, effect:"rough",  severity:1 },
+        { id:"trap",  name:"Training Trap",          symbol:"^", x:7, y:8, effect:"trap",   severity:3 }
+      ],
+      items: {
+        leather_jacket:      { name:"Carl's Leather Jacket",      slot:"torso",       armor:1, durability:12, tags:["equipment"] },
+        unstable_powder:     { name:"Unstable Dungeon Powder",    slot:"material",    craftingPower:2, tags:["material","explosive_component"] },
+        crude_blast_charge:  { name:"Crude Blast Charge",         slot:"combat_item", damage:4, accuracy:90, tags:["explosive","consumable"] },
+        threadbare_pants:    { name:"Threadbare Tutorial Pants",  slot:"legs",        armor:1, durability:5,  tags:["equipment"] },
+        stale_healing_bar:   { name:"Stale Healing Bar",          slot:"consumable",  healing:4, tags:["healing","consumable"] }
+      },
+      quests: [
+        q("speak",     "Listen Before Dying",   "Talk to Mordecai and learn the first survival rules.",              "spoke_to_mordecai"),
+        q("inventory", "Inventory Check",       "Confirm the jacket is real gear and the lack of pants is real trouble.", "inspected_inventory"),
+        q("chest",     "Questionable Gift",     "Open the tutorial chest and recover the first explosive material.", "opened_tutorial_chest"),
+        q("craft",     "Carl Makes A Problem",  "Craft the first crude explosive from dungeon materials.",           "crafted_first_explosive"),
+        q("blood",     "First Blood",           "Defeat the tutorial enemy without pretending this is normal.",      "defeated_enemy"),
+        q("pants",     "Dress Code Violation",  "Find something, anything, that counts as pants.",                  "picked_up_item"),
+        q("flooring",  "Bad Flooring",          "Learn that terrain can hate you too.",                              "triggered_hazard")
+      ],
+      viewer: { party:0, carl:0, donut:4 },
+      dialogueIndex: { mordecai:0, bopca:0 },
+      checkpoint: null
+    };
+
+    const dialogue = {
+      mordecai: [
+        "Mordecai: Listen carefully. You are alive, classless, underdressed, and already behind schedule. That is not a strategy.",
+        "Mordecai: The cat is Level 0. Civilian. Do not let her get hit. Do not let yourself get hit either, but especially do not let the cat get hit.",
+        "Mordecai: The System has rules. Bad rules. Cruel rules. But rules can be used, and that is the only reason I am still talking to you."
+      ],
+      bopca: [
+        "Bopca Clerk: You want affordable prices? That is adorable. I sell survival, not hope.",
+        "Bopca Clerk: The cat gets a discount if she stops staring at me like that."
+      ]
+    };
+
+    const controls = [
+      "WASD move","X attack","U use item","T talk","O open","I inventory",
+      "C craft","E equip","P pickup","B buy","F follow","H hide","R retreat",
+      "V save","L load","K checkpoint","= zoom in","- zoom out","Q quit"
+    ];
+
+    function q(id, name, desc, event) {
+      return { id, name, desc, event, current:0, target:1, complete:false };
+    }
+
+    /* ─── SYSTEM ────────────────────────────────────────────────── */
+    function system(text) {
+      state.systemLog.push("SYSTEM: " + text);
+      state.systemLog = state.systemLog.slice(-5);
+      renderSystem();
+    }
+
+    function completeQuest(event) {
+      for (const quest of state.quests) {
+        if (quest.event === event && !quest.complete) {
+          quest.current = Math.min(quest.target, quest.current + 1);
+          if (quest.current >= quest.target) {
+            quest.complete = true;
+            showBanner("QUEST COMPLETE — " + quest.name);
+          }
+        }
+      }
+    }
+
+    function changeViewer(which, amount) {
+      state.viewer[which] = Math.max(0, state.viewer[which] + amount);
+      state.viewer.party  = Math.max(0, state.viewer.party + Math.max(0, Math.floor(amount / 2)));
+      if (state.viewer.party >= 10) {
+        system("Sponsor interest detected. Somewhere, someone with too much money enjoyed that.");
+        state.viewer.party = 0;
+      }
+    }
+
+    /* ─── WORLD HELPERS ─────────────────────────────────────────── */
+    function tileAt(x, y) {
+      if (y < 0 || y >= baseGrid.length || x < 0 || x >= baseGrid[0].length) return "#";
+      return baseGrid[y][x];
+    }
+    function entityAt(x, y) {
+      return Object.values(state.entities).find(e => e.x === x && e.y === y && e.hp > 0);
+    }
+    function objectAt(x, y) {
+      return state.objects.find(o => o.x === x && o.y === y && !o.picked && !(o.type === "chest" && o.opened));
+    }
+    function hazardAt(x, y) {
+      return state.hazards.find(h => h.x === x && h.y === y);
+    }
+    function blocked(x, y, ignore = []) {
+      if (["#","="].includes(tileAt(x, y))) return true;
+      const obj = objectAt(x, y);
+      if (obj && obj.blocks) return true;
+      const ent = entityAt(x, y);
+      return ent && !ignore.includes(ent.id);
+    }
+    function near(a, b, d = 1) {
+      return Math.abs(a.x - b.x) <= d && Math.abs(a.y - b.y) <= d;
+    }
+
+    /* ─── TURN ENGINE ───────────────────────────────────────────── */
+    function advanceTurn() {
+      state.turn  += 1;
+      state.timer  = Math.max(0, state.timer - 1);
+      donutSupport();
+      enemyTurn();
+      if ([30,10,5].includes(state.timer))
+        system(`Timer warning: ${state.timer} turns remain. Panic is a renewable resource.`);
+      if (state.timer === 0)
+        system("The floor timer hit zero. This run is over. The System sends thoughts and no prayers.");
+    }
+
+    /* ─── ACTIONS ───────────────────────────────────────────────── */
+    function move(dx, dy) {
+      const carl = state.entities.carl;
+      const nx = carl.x + dx, ny = carl.y + dy;
+      if (blocked(nx, ny, ["carl"])) {
+        system("Crawler 4411 has located an obstacle. The obstacle remains undefeated.");
+        return true;
+      }
+      const prev = { x: carl.x, y: carl.y };
+      carl.x = nx; carl.y = ny; state.lastMoved = true;
+      followDonut(prev);
+      const hazard = hazardAt(nx, ny);
+      if (hazard) applyHazard(hazard);
+      const npc = nearestNpc();
+      if (npc) system(`${npc.name} is close enough to talk. Press T.`);
+      else donutBanter();
+      completeQuest("player_moved");
+      return true;
+    }
+
+    function followDonut(prev) {
+      const donut = state.entities.donut;
+      if (donut.mode !== "follow") return;
+      if (!blocked(prev.x, prev.y, ["donut","carl"])) {
+        donut.x = prev.x; donut.y = prev.y; return;
+      }
+      const carl = state.entities.carl;
+      const dirs = [
+        [Math.sign(carl.x - donut.x), 0],
+        [0, Math.sign(carl.y - donut.y)],
+        [0,-1],[1,0],[0,1],[-1,0]
+      ];
+      for (const [dx, dy] of dirs) {
+        if ((dx || dy) && !blocked(donut.x + dx, donut.y + dy, ["donut"])) {
+          donut.x += dx; donut.y += dy; return;
+        }
+      }
+    }
+
+    function donutBanter() {
+      const lines = [
+        "Donut: Carl, this floor is unspeakably filthy.",
+        "Donut: I can feel the grime between my toes. This is a hate crime against grooming.",
+        "Donut: My fans must never see me like this. Walk softer."
+      ];
+      const idx = Math.min(state.dialogueIndex.mordecai, lines.length - 1);
+      system(lines[idx]);
+    }
+
+    function applyHazard(hazard) {
+      if (hazard.effect === "trap") {
+        const dmg = Math.max(1, hazard.severity - state.entities.carl.armor);
+        state.entities.carl.hp = Math.max(0, state.entities.carl.hp - dmg);
+        system(`Trap triggered: Carl takes ${dmg} damage. The floor has entered the conversation.`);
+        completeQuest("triggered_hazard");
+      } else if (hazard.effect === "rough") {
+        system("Rough terrain. The System applauds the floor's initiative.");
+        completeQuest("triggered_hazard");
+      } else {
+        system("Donut: Carl, this tile smells like wet garbage with ambition.");
+      }
+    }
+
+    function nearestNpc() {
+      return Object.values(state.entities).find(e => e.type === "npc" && near(state.entities.carl, e));
+    }
+
+    function talk() {
+      const npc = nearestNpc();
+      if (!npc) { system("There is nobody close enough to talk to. Somehow, this is still awkward."); return true; }
+      const lines = dialogue[npc.id] || [];
+      const idx = state.dialogueIndex[npc.id] || 0;
+      system(lines[idx] || `${npc.name}: ...`);
+      state.dialogueIndex[npc.id] = Math.min(idx + 1, Math.max(0, lines.length - 1));
+      if (npc.id === "mordecai" && idx >= 1) completeQuest("spoke_to_mordecai");
+      return true;
+    }
+
+    function openNearby() {
+      const carl = state.entities.carl;
+      const chest = state.objects.find(o =>
+        o.type === "chest" && !o.opened &&
+        Math.abs(o.x - carl.x) <= 1 && Math.abs(o.y - carl.y) <= 1);
+      if (!chest) { system("Nothing nearby opens. The desk remains aggressively desk-shaped."); return true; }
+      chest.opened = true;
+      for (const item of chest.contains) state.entities.carl.inventory.push(item);
+      system("Loot event registered. Try not to treat this as proof you are good at decisions.");
+      completeQuest("opened_tutorial_chest");
+      return true;
+    }
+
+    function inventory() {
+      system("Inventory inspected. NOTICE: Pants have not been located. The System is deeply unsurprised.");
+      completeQuest("inspected_inventory");
+      return true;
+    }
+
+    function craft() {
+      const inv = state.entities.carl.inventory;
+      const idx = inv.indexOf("unstable_powder");
+      if (idx < 0) { system("Carl needs something unstable before he can make something worse."); return true; }
+      inv.splice(idx, 1);
+      inv.push("crude_blast_charge");
+      system("Crafting update: crude explosive assembled. The viewers have upgraded you from doomed to interesting.");
+      completeQuest("crafted_first_explosive");
+      changeViewer("carl", 4);
+      return true;
+    }
+
+    function attack(useItem = false) {
+      const enemy = Object.values(state.entities).find(
+        e => e.type === "monster" && e.hp > 0 && near(state.entities.carl, e, useItem ? 3 : 1));
+      if (!enemy) {
+        system(useItem
+          ? "No enemy is close enough to make this a responsible bad idea."
+          : "Carl swings at the concept of danger. Nothing happens.");
+        return true;
+      }
+      let dmg = Math.max(0, 2 + Math.floor(state.entities.carl.stats.strength / 2) - enemy.armor);
+      if (useItem) {
+        const inv = state.entities.carl.inventory;
+        const iIdx = inv.findIndex(id => (state.items[id].tags || []).includes("explosive"));
+        if (iIdx < 0) { system("Carl has nothing explosively useful ready."); return true; }
+        const item = inv.splice(iIdx, 1)[0];
+        dmg = Math.max(0, state.items[item].damage - enemy.armor);
+        changeViewer("carl", 6);
+      } else {
+        changeViewer("carl", 1);
+      }
+      enemy.hp = Math.max(0, enemy.hp - dmg);
+      state.lastHitEnemy = enemy.id;
+      system(`Carl hits ${enemy.name} for ${dmg} damage.`);
+      if (enemy.hp <= 0) {
+        system(`${enemy.name} is defeated. Achievement unlocked: Applied Learning.`);
+        completeQuest("defeated_enemy");
+      }
+      return true;
+    }
+
+    function donutSupport() {
+      const donut  = state.entities.donut;
+      const enemy  = Object.values(state.entities).find(
+        e => e.type === "monster" && e.hp > 0 && near(donut, e, 2));
+      if (!enemy || donut.mode === "hide") return;
+      enemy.hp = Math.max(0, enemy.hp - 1);
+      state.lastHitEnemy = enemy.id;
+      system(`Donut swipes at ${enemy.name} for 1 damage. The audience makes an undignified noise.`);
+      if (enemy.hp <= 0) {
+        completeQuest("defeated_enemy");
+        changeViewer("donut", 8);
+      }
+    }
+
+    function enemyTurn() {
+      const enemy = state.entities.goblin;
+      if (!enemy || enemy.hp <= 0) return;
+      const targets = [state.entities.carl, state.entities.donut]
+        .filter(t => t.hp > 0 && near(enemy, t, 1));
+      if (!targets.length) return;
+      const target = targets.sort((a,b) => a.hp - b.hp)[0];
+      const dmg = Math.max(0, 2 - target.armor);
+      target.hp = Math.max(0, target.hp - dmg);
+      system(`${enemy.name} claws ${target.name} for ${dmg} damage.`);
+    }
+
+    function pickup() {
+      const carl = state.entities.carl;
+      const obj = state.objects.find(
+        o => o.type === "pickup" && !o.picked && o.x === carl.x && o.y === carl.y);
+      if (!obj) { system("There is nothing here to pick up. Carl briefly considers picking up his dignity."); return true; }
+      obj.picked = true;
+      carl.inventory.push(obj.item);
+      system(`Picked up ${state.items[obj.item].name}. The System refuses to call this fashion.`);
+      completeQuest("picked_up_item");
+      return true;
+    }
+
+    function equip() {
+      const carl = state.entities.carl;
+      const equipped = new Set(Object.values(carl.equipment));
+      const itemId = carl.inventory.find(
+        id => !equipped.has(id) && ["torso","legs","weapon"].includes(state.items[id].slot));
+      if (!itemId) { system("No unequipped gear available. This remains a wardrobe emergency."); return true; }
+      const item = state.items[itemId];
+      carl.equipment[item.slot] = itemId;
+      recalcArmor();
+      if (item.slot === "legs") carl.debuffs = carl.debuffs.filter(d => d !== "no_pants");
+      system(`Equipped ${item.name}. The System grudgingly acknowledges progress.`);
+      return true;
+    }
+
+    function recalcArmor() {
+      const carl = state.entities.carl;
+      carl.armor = Object.values(carl.equipment)
+        .reduce((sum, id) => sum + (state.items[id].armor || 0), 0);
+    }
+
+    function buy() {
+      const carl = state.entities.carl;
+      const shop = state.objects.find(o =>
+        o.type === "shop" && Math.abs(o.x - carl.x) <= 1 && Math.abs(o.y - carl.y) <= 1);
+      if (!shop) { system("No shop is close enough to overcharge you."); return true; }
+      carl.inventory.push(shop.stock[0]);
+      system(`Bought ${state.items[shop.stock[0]].name}. Capitalism has survived the apocalypse.`);
+      return true;
+    }
+
+    function companionMode(mode) {
+      state.entities.donut.mode = mode;
+      system(`Donut mode set to ${mode}. Donut has filed a verbal objection.`);
+      return true;
+    }
+
+    function saveGame() {
+      state.checkpoint = JSON.parse(JSON.stringify({
+        entities: state.entities, objects: state.objects,
+        quests: state.quests, viewer: state.viewer,
+        timer: state.timer, turn: state.turn
+      }));
+      try {
+        localStorage.setItem("dcc-browser-save", JSON.stringify(state.checkpoint));
+      } catch(e) {}
+      system("Game saved. The System promises nothing about emotional safety.");
+      return true;
+    }
+
+    function loadGame() {
+      let raw = null;
+      try { raw = localStorage.getItem("dcc-browser-save"); } catch(e) {}
+      if (!raw) { system("No save file exists yet. Bold strategy."); return true; }
+      restore(JSON.parse(raw));
+      system("Game loaded. Previous mistakes are now current mistakes.");
+      return true;
+    }
+
+    function restoreCheckpoint() {
+      if (!state.checkpoint) { system("No checkpoint exists yet. The System enjoys your optimism."); return true; }
+      restore(state.checkpoint);
+      system("Checkpoint restored. Reality has been politely rewound.");
+      return true;
+    }
+
+    function restore(data) {
+      state.entities = JSON.parse(JSON.stringify(data.entities));
+      state.objects  = JSON.parse(JSON.stringify(data.objects));
+      state.quests   = JSON.parse(JSON.stringify(data.quests));
+      state.viewer   = JSON.parse(JSON.stringify(data.viewer));
+      state.timer    = data.timer;
+      state.turn     = data.turn;
+    }
+
+    /* ─── INPUT ROUTING ─────────────────────────────────────────── */
+    function runAction(action) {
+      state.lastMoved = false;
+      state.lastHitEnemy = null;
+      action = action.trim().toLowerCase();
+      let acted = false;
+      const dirs = { w:[0,-1], a:[-1,0], s:[0,1], d:[1,0] };
+      if (dirs[action])          acted = move(...dirs[action]);
+      else if (action === "t")   acted = talk();
+      else if (action === "o")   acted = openNearby();
+      else if (action === "i")   acted = inventory();
+      else if (action === "c")   acted = craft();
+      else if (action === "x")   acted = attack(false);
+      else if (action === "u")   acted = attack(true);
+      else if (action === "p")   acted = pickup();
+      else if (action === "e")   acted = equip();
+      else if (action === "b")   acted = buy();
+      else if (action === "f")   acted = companionMode("follow");
+      else if (action === "h")   acted = companionMode("hide");
+      else if (action === "r")   acted = companionMode("retreat");
+      else if (action === "v")   acted = saveGame();
+      else if (action === "l")   acted = loadGame();
+      else if (action === "k")   acted = restoreCheckpoint();
+      else if (action === "q")   { system("Run ended. The viewers have filed a complaint about the lack of screaming."); acted = false; }
+      else                       system("Invalid command. The System has added this to your permanent record.");
+
+      if (acted && action !== "q") advanceTurn();
+      render();
+    }
+
+    /* ─── CLICK HANDLERS ────────────────────────────────────────── */
+    function clickCell(x, y) {
+      const e = entityAt(x, y);
+      const o = objectAt(x, y);
+      if (e && e.type === "monster")
+        return runAction(near(state.entities.carl, e, 1) ? "x" : "u");
+      if (e && e.type === "npc")  return runAction("t");
+      if (o && o.type === "chest") return runAction("o");
+      if (o && o.type === "pickup") {
+        if (state.entities.carl.x === x && state.entities.carl.y === y)
+          return runAction("p");
+        return stepToward(x, y);
+      }
+      if (o && o.type === "shop") return runAction("b");
+      return stepToward(x, y);
+    }
+
+    function stepToward(x, y) {
+      const carl = state.entities.carl;
+      const dx = Math.sign(x - carl.x);
+      const dy = Math.sign(y - carl.y);
+      if (Math.abs(x - carl.x) >= Math.abs(y - carl.y) && dx)
+        runAction(dx > 0 ? "d" : "a");
+      else if (dy)
+        runAction(dy > 0 ? "s" : "w");
+      else if (dx)
+        runAction(dx > 0 ? "d" : "a");
+    }
+
+    /* ─── RENDER ────────────────────────────────────────────────── */
+    function hpColor(pct) {
+      if (pct > .55) return "linear-gradient(90deg,#45d483,#9ee85c)";
+      if (pct > .25) return "linear-gradient(90deg,#e5c94b,#e8a030)";
+      return "linear-gradient(90deg,#e84040,#ff7a62)";
+    }
+
+    function render() {
+      renderGrid();
+      renderCharacters();
+      renderInventory();
+      renderQuests();
+      renderViewers();
+      renderTimers();
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("dungeonGrid");
+      grid.innerHTML = "";
+      for (let y = 0; y < 12; y++) {
+        for (let x = 0; x < 12; x++) {
+          const cell = document.createElement("div");
+          let symbol = tileAt(x, y);
+          let cls = "";
+          if (symbol === "#") cls = "wall";
+          if (symbol === "=") cls = "desk";
+
+          const hz = hazardAt(x, y);
+          if (hz) {
+            symbol = hz.symbol;
+            cls = hz.effect === "trap" ? "trap" : hz.effect === "rough" ? "rough" : "hazard";
+          }
+          const obj = objectAt(x, y);
+          if (obj) {
+            symbol = obj.symbol;
+            cls = obj.type === "chest" ? "chest"
+                : obj.type === "shop"  ? "shop"
+                : obj.item === "stale_healing_bar" ? "potion"
+                : "pickup";
+          }
+          const ent = entityAt(x, y);
+          if (ent) {
+            symbol = ent.id === "donut" ? "🐱" : ent.symbol;
+            cls = ent.type === "player"    ? "player"
+                : ent.type === "companion" ? "donut-cell"
+                : ent.type === "monster"   ? "enemy"
+                : ent.id === "bopca"       ? "merchant"
+                : "npc";
+            if (ent.type === "player" && state.lastMoved) cls += " moved";
+            if (ent.id === state.lastHitEnemy)            cls += " hit";
+          }
+
+          cell.className = "cell " + cls;
+          cell.textContent = symbol === "." ? "" : symbol;
+
+          if (ent && ent.type === "monster") {
+            const hp = document.createElement("div");
+            hp.className = "cell-hp";
+            hp.innerHTML = `<span style="width:${(ent.hp/ent.maxHp)*100}%"></span>`;
+            cell.appendChild(hp);
+          }
+          cell.addEventListener("click", () => clickCell(x, y));
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function renderCharacters() {
+      const carl = state.entities.carl, donut = state.entities.donut;
+      document.getElementById("carlLevel").textContent    = "LVL " + carl.level;
+      document.getElementById("carlHpText").textContent   = carl.hp + "/" + carl.maxHp;
+      const cp = carl.hp / carl.maxHp;
+      document.getElementById("carlHp").style.width      = (cp * 100) + "%";
+      document.getElementById("carlHp").style.background = hpColor(cp);
+      document.getElementById("carlArmor").textContent   = carl.armor;
+      document.getElementById("carlGear").textContent    =
+        Object.values(carl.equipment).map(id => state.items[id].name.replace("Carl's ","")).join(", ") || "None";
+      document.getElementById("carlBadges").innerHTML    =
+        carl.debuffs.map(d => `<span class="badge danger">${d.replace("_"," ")}</span>`).join("") +
+        `<span class="badge amber">XP ${carl.xp}</span>`;
+
+      document.getElementById("donutLevel").textContent   = "LVL " + donut.level;
+      document.getElementById("donutHpText").textContent  = donut.hp + "/" + donut.maxHp;
+      const dp = donut.hp / donut.maxHp;
+      document.getElementById("donutHp").style.width     = (dp * 100) + "%";
+      document.getElementById("donutHp").style.background = hpColor(dp);
+      document.getElementById("donutMode").textContent   = donut.mode;
+    }
+
+    function renderInventory() {
+      const counts = {};
+      for (const id of state.entities.carl.inventory)
+        counts[id] = (counts[id] || 0) + 1;
+      document.getElementById("inventoryList").innerHTML =
+        Object.entries(counts).map(([id, n]) => {
+          const item    = state.items[id];
+          const equipped = Object.values(state.entities.carl.equipment).includes(id);
+          return `<div class="item-line"><span>${item.name}${n > 1 ? " x"+n : ""}</span><span>${equipped ? "equipped" : item.slot}</span></div>`;
+        }).join("") || `<div class="item-line"><span>Empty</span><span>sad</span></div>`;
+    }
+
+    function renderQuests() {
+      document.getElementById("questList").innerHTML = state.quests.map(quest =>
+        `<div class="quest-card ${quest.complete ? "done" : ""}">
+          <div class="quest-check"></div>
+          <div>
+            <div class="quest-name">${quest.name}</div>
+            <div class="quest-desc">${quest.desc} ${quest.current}/${quest.target}</div>
+          </div>
+        </div>`).join("");
+    }
+
+    function renderViewers() {
+      for (const key of ["party","carl","donut"]) {
+        document.getElementById(key+"ViewerText").textContent = state.viewer[key];
+        document.getElementById(key+"Viewer").style.width = Math.min(100, state.viewer[key] * 10) + "%";
+      }
+    }
+
+    function renderTimers() {
+      const pct = state.timer / maxTimer;
+      document.getElementById("timerNumber").textContent = state.timer;
+      document.getElementById("turnCount").textContent   = "Turn " + state.turn + " · Tutorial Guild";
+      document.getElementById("floorFill").style.width  = (pct * 100) + "%";
+      const cls = "timer-number" + (pct <= .25 ? " danger" : pct <= .55 ? " warning" : "");
+      document.getElementById("timerNumber").className  = cls;
+    }
+
+    function renderSystem() {
+      document.getElementById("systemLog").innerHTML = state.systemLog
+        .map((line, idx, arr) =>
+          `<div class="sys-line ${idx === arr.length-1 ? "new" : ""}">${line}</div>`)
+        .join("");
+    }
+
+    function showBanner(text) {
+      const banner = document.getElementById("questBanner");
+      banner.textContent = text;
+      banner.classList.remove("show");
+      void banner.offsetWidth;
+      banner.classList.add("show");
+    }
+
+    /* ─── KEYBOARD INPUT ────────────────────────────────────────── */
+    document.getElementById("commandInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const inp = e.currentTarget;
+        runAction(inp.value);
+        inp.value = "";
+      }
+    });
+
+    document.addEventListener("keydown", e => {
+      if (e.target.id === "commandInput" && e.key !== "Escape") return;
+      const key = e.key.toLowerCase();
+      // zoom keys handled above already, skip them here
+      if ("wasdxtouicepbfhrvlkq".includes(key) && key.length === 1) {
+        e.preventDefault();
+        runAction(key);
+      }
+    });
+
+    /* ─── INIT ──────────────────────────────────────────────────── */
+    document.getElementById("controlsLine").innerHTML =
+      controls.map(c => `<span class="control-pill">${c}</span>`).join("");
+
+    applyZoom();
+    system("Welcome, Carl. You have been registered while aggressively failing to wear complete clothing.");
+    render();
+  </script>
+</body>
+</html>
+HTMLEOF
+echo "Done"
+Output
+
+Done
+Done
+
+You are out of free messages until 2:10 AM
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+
